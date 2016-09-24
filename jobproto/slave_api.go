@@ -10,12 +10,10 @@ type SlaveConn interface {
 
 // A SlaveJob provides a stream of tasks from a master.
 type SlaveJob interface {
-	// ID returns an identifier for the job that is
-	// unique for the underlying SlaveConn.
-	ID() int64
-
 	// RunTasks runs the tasks from the master.
-	// It returns an error if any of the tasks fails
+	// It returns an error if any of the tasks fail
 	// on either the master or the slave.
+	// It also returns an error if the job is stopped
+	// mid-task.
 	RunTasks(rootDir string) error
 }
