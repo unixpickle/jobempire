@@ -77,7 +77,6 @@ func (f *FileTransfer) RunSlave(root string, ch TaskChannel) error {
 func (f *FileTransfer) runSender(path string, ch TaskChannel) error {
 	file, err := os.Open(path)
 	if err != nil {
-		ch.Send(err)
 		return err
 	}
 	defer file.Close()
@@ -88,7 +87,6 @@ func (f *FileTransfer) runSender(path string, ch TaskChannel) error {
 			if err == io.EOF {
 				return nil
 			}
-			ch.Send(err)
 			return err
 		} else if n == 0 {
 			continue

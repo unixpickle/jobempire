@@ -14,8 +14,8 @@ type SlaveJob interface {
 	// unique for the underlying SlaveConn.
 	ID() int64
 
-	// RunNext runs the next task from the master.
-	// It returns an error if the task fails to run.
-	// It returns io.EOF if the job is complete.
-	RunNext(rootDir string) error
+	// RunTasks runs the tasks from the master.
+	// It returns an error if any of the tasks fails
+	// on either the master or the slave.
+	RunTasks(rootDir string) error
 }
