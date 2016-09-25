@@ -86,6 +86,10 @@ func readStatusObj(c gobplexer.Connection) error {
 	if err != nil {
 		return err
 	}
+
+	// Allow the other end to fully disconnect.
+	c.Send(nil)
+
 	if value == nil {
 		return nil
 	} else if errVal, ok := value.(error); ok {

@@ -72,7 +72,10 @@ func (s *slaveJob) RunTasks(rootDir string) {
 				return
 			}
 			runErr := task.RunSlave(rootDir, dataConn)
+			dataConn.Close()
+
 			statusConn.Send(runErr)
+			statusConn.Receive()
 		}()
 	}
 }
