@@ -1,6 +1,7 @@
 package jobproto
 
 import (
+	"encoding/gob"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
@@ -9,6 +10,10 @@ import (
 	"path/filepath"
 	"runtime"
 )
+
+func init() {
+	gob.Register(&GoRun{})
+}
 
 // GoRun is a task which runs a Go program on the slave
 // by compiling it on the server and transferring the
@@ -24,9 +29,9 @@ func (g *GoRun) RunMaster(ch TaskChannel) error {
 	if err != nil {
 		return fmt.Errorf("failed to receive platform info: %s", err)
 	}
-	osArch, ok := osArchObj.([2]string)
-	if !ok {
-		return fmt.Errorf("unexpected platform info type: %T", osArchObj)
+	osArch, ok := osArchObj.([]string)
+	if !ok || len(osArch) != 2 {
+		return fmt.Errorf("unexpected platform info: %v", osArchObj)
 	}
 
 	tempDir, err := ioutil.TempDir("", "gorun")
@@ -69,7 +74,7 @@ func (g *GoRun) RunMaster(ch TaskChannel) error {
 
 // RunSlave runs the slave side of the task.
 func (g *GoRun) RunSlave(root string, ch TaskChannel) error {
-	osArch := [2]string{runtime.GOOS, runtime.GOARCH}
+	osArch := []string{runtime.GOOS, runtime.GOARCH}
 	if err := ch.Send(osArch); err != nil {
 		return fmt.Errorf("failed to send platform info: %s", err)
 	}
@@ -96,6 +101,7 @@ func (g *GoRun) RunSlave(root string, ch TaskChannel) error {
 	if err := ioutil.WriteFile(tempExcPath, executable, 0755); err != nil {
 		return fmt.Errorf("failed to write executable: %s", err)
 	}
+	defer os.Remove(tempExcPath)
 
 	cmd := exec.Command(tempExcPath, args...)
 	cmd.Dir = root
