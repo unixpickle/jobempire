@@ -24,6 +24,7 @@ func NewSlaveConnNet(n net.Conn) (SlaveConn, error) {
 func (s *slaveConn) NextJob() (SlaveJob, error) {
 	c, err := s.listener.Accept()
 	if err != nil {
+		s.listener.Close()
 		return nil, err
 	}
 	return &slaveJob{listener: gobplexer.MultiplexListener(c)}, nil
