@@ -74,8 +74,10 @@ func (m *masterJob) Run(t Task) error {
 	remoteStatus := readStatusObj(statusConn)
 	if runErr != nil {
 		return runErr
+	} else if remoteStatus != nil {
+		return fmt.Errorf("external error: %s", remoteStatus)
 	} else {
-		return fmt.Errorf("remote error: %s", remoteStatus)
+		return nil
 	}
 }
 
