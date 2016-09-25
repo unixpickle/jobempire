@@ -12,7 +12,7 @@ import (
 const transferBufferSize = 65536
 
 func init() {
-	gob.Register(FileTransfer{})
+	gob.Register(&FileTransfer{})
 }
 
 // A Task implements a unit of work.
@@ -79,6 +79,15 @@ func (f *FileTransfer) runSender(path string, ch TaskChannel) error {
 	if err != nil {
 		return err
 	}
+	pos, err := file.Seek(0, os.SEEK_END)
+	if err != nil {
+		return err
+	}
+	ch.Send(pos)
+	if _, err := file.Seek(0, os.SEEK_SET); err != nil {
+		return err
+	}
+
 	defer file.Close()
 	buf := make([]byte, transferBufferSize)
 	for {
@@ -104,6 +113,15 @@ func (f *FileTransfer) runReceiver(path string, ch TaskChannel) (resErr error) {
 		return err
 	}
 
+	sizeObj, err := ch.Receive()
+	if err != nil {
+		return fmt.Errorf("failed to read file size: %s", err)
+	}
+	size, ok := sizeObj.(int64)
+	if !ok {
+		return fmt.Errorf("invalid file size type: %T", sizeObj)
+	}
+
 	defer func() {
 		if resErr != nil {
 			outFile.Close()
@@ -114,10 +132,7 @@ func (f *FileTransfer) runReceiver(path string, ch TaskChannel) (resErr error) {
 	for {
 		obj, err := ch.Receive()
 		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			return err
+			break
 		}
 		data, ok := obj.([]byte)
 		if !ok {
@@ -130,6 +145,12 @@ func (f *FileTransfer) runReceiver(path string, ch TaskChannel) (resErr error) {
 		if _, err := outFile.Write(data); err != nil {
 			return err
 		}
+	}
+
+	if off, err := outFile.Seek(0, os.SEEK_CUR); err != nil {
+		return err
+	} else if off != size {
+		return fmt.Errorf("expected file size %d but got size %d", size, off)
 	}
 
 	outFile.Close()
