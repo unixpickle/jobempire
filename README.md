@@ -1,5 +1,5 @@
 # jobempire
 
-*jobempire* (pronounced "Job Empire") will be tool to manage many concurrent jobs (programs, network downloads, etc.) across tens or hundreds of computers. With jobempire, you will be able to queue up a bunch of work to be done, and said work will automatically be distributed over your set of slave nodes.
+jobempire (pronounced "Job Empire") will be tool to manage many concurrent jobs across tens or hundreds of computers. These jobs might be high-CPU tasks, network downloads, or anything else you please.
 
-I want to make jobempire work seamlessly with Go across multiple platforms. This way, a job can specify a Go program to run, and said program will be run on a slave node regardless of its OS and architecture.
+I want to make jobempire work seamlessly with Go across multiple platforms. Your servers should be able to run any job you queue up, regardless of OS or CPU architecture. Since Go has great built-in cross compilation, the server should be able to cross-compile Go binaries on the fly.
