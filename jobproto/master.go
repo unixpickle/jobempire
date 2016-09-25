@@ -3,8 +3,14 @@ package jobproto
 import (
 	"fmt"
 	"net"
+	"time"
 
 	"github.com/unixpickle/gobplexer"
+)
+
+const (
+	pingInterval = time.Second * 30
+	pingMaxDelay = time.Minute
 )
 
 type masterConn struct {
@@ -12,9 +18,13 @@ type masterConn struct {
 }
 
 // NewMasterConnNet creates a MasterConn from a net.Conn.
-func NewMasterConnNet(c net.Conn) (MasterConn, error) {
-	gobCon := gobplexer.NewConnectionConn(c)
-	return &masterConn{connector: gobplexer.MultiplexConnector(gobCon)}, nil
+func NewMasterConnNet(n net.Conn) (MasterConn, error) {
+	rootCon := gobplexer.MultiplexConnector(gobplexer.NewConnectionConn(n))
+	c, err := gobplexer.KeepaliveConnector(rootCon, pingInterval, pingMaxDelay)
+	if err != nil {
+		return nil, err
+	}
+	return &masterConn{connector: gobplexer.MultiplexConnector(c)}, nil
 }
 
 func (m *masterConn) StartJob() (MasterJob, error) {
