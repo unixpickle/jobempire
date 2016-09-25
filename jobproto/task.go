@@ -40,7 +40,8 @@ type TaskChannel interface {
 	// Receive receives the next message from the other side
 	// of the task.
 	// It blocks until a message is received.
-	// It returns io.EOF if the other side has finished.
+	// It returns io.EOF after all messages from the other
+	// side have been received.
 	Receive() (interface{}, error)
 }
 

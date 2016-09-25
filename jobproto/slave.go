@@ -74,7 +74,11 @@ func (s *slaveJob) RunTasks(rootDir string) {
 			runErr := task.RunSlave(rootDir, dataConn)
 			dataConn.Close()
 
-			statusConn.Send(runErr)
+			if runErr != nil {
+				statusConn.Send(runErr.Error())
+			} else {
+				statusConn.Send(nil)
+			}
 			statusConn.Receive()
 		}()
 	}

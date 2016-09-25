@@ -1,6 +1,7 @@
 package jobproto
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"time"
@@ -94,8 +95,8 @@ func readStatusObj(c gobplexer.Connection) error {
 
 	if value == nil {
 		return nil
-	} else if errVal, ok := value.(error); ok {
-		return errVal
+	} else if errVal, ok := value.(string); ok {
+		return errors.New(errVal)
 	} else {
 		return fmt.Errorf("unexpected status type: %T", value)
 	}
