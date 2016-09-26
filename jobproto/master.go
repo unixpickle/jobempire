@@ -19,10 +19,16 @@ type masterConn struct {
 }
 
 // NewMasterConnNet creates a MasterConn from a net.Conn.
-func NewMasterConnNet(n net.Conn) (MasterConn, error) {
-	rootCon := gobplexer.MultiplexConnector(gobplexer.NewConnectionConn(n))
+// If the handshake fails, c is closed.
+func NewMasterConnNet(c net.Conn) (MasterConn, error) {
+	return newMasterConn(gobplexer.NewConnectionConn(c))
+}
+
+func newMasterConn(rawCon gobplexer.Connection) (MasterConn, error) {
+	rootCon := gobplexer.MultiplexConnector(rawCon)
 	c, err := gobplexer.KeepaliveConnector(rootCon, pingInterval, pingMaxDelay)
 	if err != nil {
+		rawCon.Close()
 		return nil, err
 	}
 	return &masterConn{connector: gobplexer.MultiplexConnector(c)}, nil

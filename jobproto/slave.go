@@ -12,10 +12,16 @@ type slaveConn struct {
 }
 
 // NewSlaveConnNet creates a SlaveConn from a net.Conn.
-func NewSlaveConnNet(n net.Conn) (SlaveConn, error) {
-	rootCon := gobplexer.MultiplexListener(gobplexer.NewConnectionConn(n))
+// If the handshake fails, c is closed.
+func NewSlaveConnNet(c net.Conn) (SlaveConn, error) {
+	return newSlaveConn(gobplexer.NewConnectionConn(c))
+}
+
+func newSlaveConn(rawCon gobplexer.Connection) (SlaveConn, error) {
+	rootCon := gobplexer.MultiplexListener(rawCon)
 	c, err := gobplexer.KeepaliveListener(rootCon, pingInterval, pingMaxDelay)
 	if err != nil {
+		rawCon.Close()
 		return nil, err
 	}
 	return &slaveConn{listener: gobplexer.MultiplexListener(c)}, nil
