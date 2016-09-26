@@ -105,11 +105,11 @@ func NewMasterConn(c net.Conn) (m Master, e error) {
 
 	connector := gobplexer.MultiplexConnector(keptAlive)
 	if conn, err := connector.Connect(); err != nil {
-		return nil, fmt.Errorf("failed to get info: %s", err)
+		return nil, fmt.Errorf("connect for info: %s", err)
 	} else if infoObj, err := conn.Receive(); err != nil {
-		return nil, fmt.Errorf("failed to read info: %s", err)
+		return nil, fmt.Errorf("read info: %s", err)
 	} else if info, ok := infoObj.(SlaveInfo); !ok {
-		return nil, fmt.Errorf("bad slave info type: %T", infoObj)
+		return nil, fmt.Errorf("invalid info type: %T", infoObj)
 	} else {
 		doneChan := make(chan struct{})
 		go func() {
@@ -158,24 +158,24 @@ func (m *masterJob) Close() error {
 func (m *masterJob) Run(t Task, log chan<- LogEntry) error {
 	taskConn, err := m.connector.Connect()
 	if err != nil {
-		return fmt.Errorf("failed to connect for task: %s", err)
+		return fmt.Errorf("connect task: %s", err)
 	}
 	defer taskConn.Close()
 
 	connector := gobplexer.MultiplexConnector(taskConn)
 	statusConn, err := connector.Connect()
 	if err != nil {
-		return fmt.Errorf("failed to establish status channel: %s", err)
+		return fmt.Errorf("establish status channel: %s", err)
 	}
 
 	dataConn, err := connector.Connect()
 	if err != nil {
-		return fmt.Errorf("failed to establish data channel: %s", err)
+		return fmt.Errorf("establish data channel: %s", err)
 	}
 
 	logConn, err := connector.Connect()
 	if err != nil {
-		return fmt.Errorf("failed to establish log channel: %s", err)
+		return fmt.Errorf("establish log channel: %s", err)
 	}
 
 	var logWg sync.WaitGroup
@@ -195,7 +195,7 @@ func (m *masterJob) Run(t Task, log chan<- LogEntry) error {
 	}()
 
 	if err := dataConn.Send(t); err != nil {
-		return fmt.Errorf("failed to send task: %s", err)
+		return fmt.Errorf("send task: %s", err)
 	}
 	runErr := t.RunMaster(masterTaskConn{dataConn, log})
 	dataConn.Close()
@@ -227,7 +227,7 @@ func readStatusObj(c gobplexer.Connection) error {
 	} else if errVal, ok := value.(string); ok {
 		return errors.New(errVal)
 	} else {
-		return fmt.Errorf("unexpected status type: %T", value)
+		return fmt.Errorf("invalid status type: %T", value)
 	}
 }
 

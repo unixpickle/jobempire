@@ -30,16 +30,16 @@ type GoRun struct {
 func (g *GoRun) RunMaster(ch TaskChannel) error {
 	osArchObj, err := ch.Receive()
 	if err != nil {
-		return fmt.Errorf("failed to receive platform info: %s", err)
+		return fmt.Errorf("receive platform info: %s", err)
 	}
 	osArch, ok := osArchObj.([]string)
 	if !ok || len(osArch) != 2 {
-		return fmt.Errorf("unexpected platform info: %v", osArchObj)
+		return fmt.Errorf("invalid platform info: %v", osArchObj)
 	}
 
 	tempDir, err := ioutil.TempDir("", "gorun")
 	if err != nil {
-		return fmt.Errorf("failed to create temp dir: %s", err)
+		return fmt.Errorf("create temp dir: %s", err)
 	}
 	defer func() {
 		if tempDir != "" {
@@ -51,22 +51,22 @@ func (g *GoRun) RunMaster(ch TaskChannel) error {
 	cmd := exec.Command("go", "build", "-o", tempFile, g.GoSourceDir)
 	cmd.Env = []string{"GOPATH", os.Getenv("GOPATH"), "GOOS", osArch[0], "GOARCH", osArch[1]}
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("failed to compile binary: %s", err)
+		return fmt.Errorf("compile binary: %s", err)
 	}
 
 	executable, err := ioutil.ReadFile(tempFile)
 	if err != nil {
-		return fmt.Errorf("failed to read executable: %s", err)
+		return fmt.Errorf("read executable: %s", err)
 	}
 
 	os.RemoveAll(tempDir)
 	tempDir = ""
 
 	if err := ch.Send(executable); err != nil {
-		return fmt.Errorf("failed to send executable: %s", err)
+		return fmt.Errorf("send executable: %s", err)
 	}
 	if err := ch.Send(g.Arguments); err != nil {
-		return fmt.Errorf("failed to send arguments: %s", err)
+		return fmt.Errorf("send arguments: %s", err)
 	}
 
 	// Wait for the other end to complete.
@@ -79,30 +79,30 @@ func (g *GoRun) RunMaster(ch TaskChannel) error {
 func (g *GoRun) RunSlave(root string, ch TaskChannel) error {
 	osArch := []string{runtime.GOOS, runtime.GOARCH}
 	if err := ch.Send(osArch); err != nil {
-		return fmt.Errorf("failed to send platform info: %s", err)
+		return fmt.Errorf("send platform info: %s", err)
 	}
 
 	executableObj, err := ch.Receive()
 	if err != nil {
-		return fmt.Errorf("failed to receive executable: %s", err)
+		return fmt.Errorf("receive executable: %s", err)
 	}
 	executable, ok := executableObj.([]byte)
 	if !ok {
-		return fmt.Errorf("unexpected type for executable: %T", executableObj)
+		return fmt.Errorf("invalid executable type: %T", executableObj)
 	}
 
 	argsObj, err := ch.Receive()
 	if err != nil {
-		return fmt.Errorf("failed to receive arguments: %s", err)
+		return fmt.Errorf("receive arguments: %s", err)
 	}
 	args, ok := argsObj.([]string)
 	if !ok {
-		return fmt.Errorf("unexpected type for arguments: %T", argsObj)
+		return fmt.Errorf("invalid argument type: %T", argsObj)
 	}
 
 	tempExcPath := filepath.Join(root, fmt.Sprintf("%d", rand.Int63()))
 	if err := ioutil.WriteFile(tempExcPath, executable, 0755); err != nil {
-		return fmt.Errorf("failed to write executable: %s", err)
+		return fmt.Errorf("write executable: %s", err)
 	}
 	defer os.Remove(tempExcPath)
 
@@ -114,7 +114,7 @@ func (g *GoRun) RunSlave(root string, ch TaskChannel) error {
 	}
 
 	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("error starting executable: %s", err)
+		return fmt.Errorf("start executable: %s", err)
 	}
 
 	go func() {
@@ -125,7 +125,7 @@ func (g *GoRun) RunSlave(root string, ch TaskChannel) error {
 	}()
 
 	if err := cmd.Wait(); err != nil {
-		return fmt.Errorf("error from executable: %s", err)
+		return fmt.Errorf("wait for executable: %s", err)
 	}
 
 	logWg.Wait()

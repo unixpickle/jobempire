@@ -90,10 +90,10 @@ func NewSlaveConn(c net.Conn) (s Slave, e error) {
 
 	statusConn, err := listener.Accept()
 	if err != nil {
-		return nil, fmt.Errorf("failed to accept info connection: %s", err)
+		return nil, fmt.Errorf("accept info connection: %s", err)
 	}
 	if err := statusConn.Send(CurrentSlaveInfo()); err != nil {
-		return nil, fmt.Errorf("failed to send slave info: %s", err)
+		return nil, fmt.Errorf("send slave info: %s", err)
 	}
 
 	// Leave the statusConn open so that the remote end can

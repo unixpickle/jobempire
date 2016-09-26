@@ -85,7 +85,7 @@ func (f *FileTransfer) runReceiver(path string, ch TaskChannel) (resErr error) {
 
 	sizeObj, err := ch.Receive()
 	if err != nil {
-		return fmt.Errorf("failed to read file size: %s", err)
+		return fmt.Errorf("read file size: %s", err)
 	}
 	size, ok := sizeObj.(int64)
 	if !ok {
@@ -108,11 +108,7 @@ func (f *FileTransfer) runReceiver(path string, ch TaskChannel) (resErr error) {
 		}
 		data, ok := obj.([]byte)
 		if !ok {
-			errObj, ok1 := obj.(error)
-			if !ok1 {
-				return fmt.Errorf("receiver got unexpected data type: %T", obj)
-			}
-			return fmt.Errorf("sender error: %s", errObj)
+			return fmt.Errorf("invalid data type: %T", obj)
 		}
 		if _, err := outFile.Write(data); err != nil {
 			return err
@@ -122,7 +118,7 @@ func (f *FileTransfer) runReceiver(path string, ch TaskChannel) (resErr error) {
 	if off, err := outFile.Seek(0, os.SEEK_CUR); err != nil {
 		return err
 	} else if off != size {
-		return fmt.Errorf("expected file size %d but got size %d", size, off)
+		return fmt.Errorf("invalid size %d (expected %d)", off, size)
 	}
 
 	outFile.Close()
