@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 )
 
+const transferBufferSize = 65536
+
 func init() {
 	gob.Register(&FileTransfer{})
 }
