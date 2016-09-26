@@ -1,14 +1,17 @@
 package jobproto
 
 import (
+	"bufio"
 	"encoding/gob"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"math/rand"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"sync"
 )
 
 func init() {
@@ -103,8 +106,13 @@ func (g *GoRun) RunSlave(root string, ch TaskChannel) error {
 	}
 	defer os.Remove(tempExcPath)
 
+	var logWg sync.WaitGroup
 	cmd := exec.Command(tempExcPath, args...)
 	cmd.Dir = root
+	if err := logCommandOut(&logWg, cmd, ch); err != nil {
+		return err
+	}
+
 	if err := cmd.Start(); err != nil {
 		return fmt.Errorf("error starting executable: %s", err)
 	}
@@ -120,8 +128,39 @@ func (g *GoRun) RunSlave(root string, ch TaskChannel) error {
 		return fmt.Errorf("error from executable: %s", err)
 	}
 
+	logWg.Wait()
+
 	// Notify the other end that we have finished.
 	ch.Send(nil)
 
+	return nil
+}
+
+func logCommandOut(wg *sync.WaitGroup, cmd *exec.Cmd, ch TaskChannel) error {
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return fmt.Errorf("make stdout pipe: %s", err)
+	}
+	stderr, err := cmd.StderrPipe()
+	if err != nil {
+		stdout.Close()
+		return fmt.Errorf("make stderr pipe: %s", err)
+	}
+	for i, x := range []io.Reader{stdout, stderr} {
+		wg.Add(1)
+		go func(name string, r io.Reader) {
+			defer wg.Done()
+			bufReader := bufio.NewReader(r)
+			for {
+				line, err := bufReader.ReadString('\n')
+				if line != "" || err == nil {
+					ch.Log(line)
+				}
+				if err != nil {
+					return
+				}
+			}
+		}([]string{"stdout", "stderr"}[i], x)
+	}
 	return nil
 }

@@ -52,6 +52,7 @@ func (f *FileTransfer) runSender(path string, ch TaskChannel) error {
 	if err != nil {
 		return err
 	}
+	ch.Log(fmt.Sprintf("sending file of length %d", pos))
 	ch.Send(pos)
 	if _, err := file.Seek(0, os.SEEK_SET); err != nil {
 		return err
@@ -90,6 +91,8 @@ func (f *FileTransfer) runReceiver(path string, ch TaskChannel) (resErr error) {
 	if !ok {
 		return fmt.Errorf("invalid file size type: %T", sizeObj)
 	}
+
+	ch.Log(fmt.Sprintf("receiving file of length %d", size))
 
 	defer func() {
 		if resErr != nil {
