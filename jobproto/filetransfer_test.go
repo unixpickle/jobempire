@@ -50,7 +50,7 @@ func TestFileTransfer(t *testing.T) {
 		ToSlave:    true,
 		SlavePath:  "dest_file",
 		MasterPath: sourceFile,
-	})
+	}, nil)
 	if err != nil {
 		t.Error("job 1 failed:", err)
 	}
@@ -58,7 +58,7 @@ func TestFileTransfer(t *testing.T) {
 		ToSlave:    false,
 		SlavePath:  "source_file",
 		MasterPath: filepath.Join(tempDir, "dest_file1"),
-	})
+	}, nil)
 	if err != nil {
 		t.Error("job 2 failed:", err)
 	}

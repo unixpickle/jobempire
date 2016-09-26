@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"sync"
 	"time"
 
 	"github.com/unixpickle/gobplexer"
@@ -13,6 +14,13 @@ const (
 	pingInterval = time.Second * 30
 	pingMaxDelay = time.Minute
 )
+
+// A LogEntry stores one line of logged output from either
+// end of a Task.
+type LogEntry struct {
+	FromMaster bool
+	Message    string
+}
 
 // A Master provides control over the master side of a
 // master-slave connection.
@@ -62,8 +70,14 @@ type MasterJob interface {
 	// It blocks until the task has completed on both ends.
 	// It returns an error if the task fails on either end,
 	// or if the job is closed.
+	//
+	// The log channel should be read from continually in
+	// order to prevent the task from blocking indefinitely.
+	// Alternatively, the log channel may be nil to ignore
+	// logged output.
+	//
 	// Multiple tasks may be run on a job simultaneously.
-	Run(t Task) error
+	Run(t Task, log chan<- LogEntry) error
 }
 
 type masterConn struct {
@@ -141,7 +155,7 @@ func (m *masterJob) Close() error {
 	return m.connector.Close()
 }
 
-func (m *masterJob) Run(t Task) error {
+func (m *masterJob) Run(t Task, log chan<- LogEntry) error {
 	taskConn, err := m.connector.Connect()
 	if err != nil {
 		return fmt.Errorf("failed to connect for task: %s", err)
@@ -159,11 +173,33 @@ func (m *masterJob) Run(t Task) error {
 		return fmt.Errorf("failed to establish data channel: %s", err)
 	}
 
+	logConn, err := connector.Connect()
+	if err != nil {
+		return fmt.Errorf("failed to establish log channel: %s", err)
+	}
+
+	var logWg sync.WaitGroup
+	logWg.Add(1)
+	go func() {
+		defer logWg.Done()
+		for {
+			msg, err := logConn.Receive()
+			if err != nil {
+				return
+			}
+			msgStr, ok := msg.(string)
+			if ok && log != nil {
+				log <- LogEntry{Message: msgStr}
+			}
+		}
+	}()
+
 	if err := dataConn.Send(t); err != nil {
 		return fmt.Errorf("failed to send task: %s", err)
 	}
-	runErr := t.RunMaster(dataConn)
+	runErr := t.RunMaster(masterTaskConn{dataConn, log})
 	dataConn.Close()
+	logWg.Wait()
 
 	remoteStatus := readStatusObj(statusConn)
 	if runErr != nil {
@@ -192,5 +228,16 @@ func readStatusObj(c gobplexer.Connection) error {
 		return errors.New(errVal)
 	} else {
 		return fmt.Errorf("unexpected status type: %T", value)
+	}
+}
+
+type masterTaskConn struct {
+	gobplexer.Connection
+	log chan<- LogEntry
+}
+
+func (m masterTaskConn) Log(message string) {
+	if m.log != nil {
+		m.log <- LogEntry{FromMaster: true, Message: message}
 	}
 }

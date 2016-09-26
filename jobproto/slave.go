@@ -137,36 +137,55 @@ func (s *slaveJob) RunTasks(rootDir string) {
 		go func() {
 			defer conn.Close()
 			defer wg.Done()
-			listener := gobplexer.MultiplexListener(conn)
-
-			statusConn, err := listener.Accept()
-			if err != nil {
-				return
-			}
-
-			dataConn, err := listener.Accept()
-			if err != nil {
-				return
-			}
-
-			taskObj, err := dataConn.Receive()
-			if err != nil {
-				return
-			}
-
-			task, ok := taskObj.(Task)
-			if !ok {
-				return
-			}
-			runErr := task.RunSlave(rootDir, dataConn)
-			dataConn.Close()
-
-			if runErr != nil {
-				statusConn.Send(runErr.Error())
-			} else {
-				statusConn.Send(nil)
-			}
-			statusConn.Receive()
+			s.runTask(rootDir, conn)
 		}()
 	}
+}
+
+func (s *slaveJob) runTask(rootDir string, conn gobplexer.Connection) {
+	listener := gobplexer.MultiplexListener(conn)
+
+	statusConn, err := listener.Accept()
+	if err != nil {
+		return
+	}
+
+	dataConn, err := listener.Accept()
+	if err != nil {
+		return
+	}
+
+	logConn, err := listener.Accept()
+	if err != nil {
+		return
+	}
+
+	taskObj, err := dataConn.Receive()
+	if err != nil {
+		return
+	}
+
+	task, ok := taskObj.(Task)
+	if !ok {
+		return
+	}
+	runErr := task.RunSlave(rootDir, slaveTaskConn{dataConn, logConn})
+	logConn.Close()
+	dataConn.Close()
+
+	if runErr != nil {
+		statusConn.Send(runErr.Error())
+	} else {
+		statusConn.Send(nil)
+	}
+	statusConn.Receive()
+}
+
+type slaveTaskConn struct {
+	gobplexer.Connection
+	logConn gobplexer.Connection
+}
+
+func (s slaveTaskConn) Log(message string) {
+	s.logConn.Send(message)
 }

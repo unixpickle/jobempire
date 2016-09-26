@@ -44,7 +44,7 @@ func TestGoRun(t *testing.T) {
 	err = job.Run(&GoRun{
 		GoSourceDir: "./test_data/test_go_bin",
 		Arguments:   []string{tempFile},
-	})
+	}, nil)
 	if err != nil {
 		t.Error("job 1 failed:", err)
 	}

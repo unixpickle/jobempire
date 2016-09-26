@@ -30,4 +30,7 @@ type TaskChannel interface {
 	// It returns an error after all messages from the other
 	// side have been received and the other side is done.
 	Receive() (interface{}, error)
+
+	// Log logs the given message.
+	Log(message string)
 }
