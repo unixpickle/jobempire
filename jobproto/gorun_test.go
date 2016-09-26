@@ -14,7 +14,7 @@ func TestGoRun(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer master.Terminate()
+	defer master.Close()
 
 	tempDir, err := ioutil.TempDir("", "jobproto_test")
 	if err != nil {
@@ -48,8 +48,8 @@ func TestGoRun(t *testing.T) {
 	if err != nil {
 		t.Error("job 1 failed:", err)
 	}
-	job.Finish()
-	master.Terminate()
+	job.Close()
+	master.Close()
 
 	select {
 	case <-doneChan:

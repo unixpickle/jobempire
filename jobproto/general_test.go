@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"net"
 	"strconv"
+	"sync"
 )
 
 const maxTestListenAttempts = 100
@@ -33,13 +34,28 @@ func TestingMasterSlave() (Master, Slave, error) {
 			return nil, nil, errors.New("failed to accept connection")
 		}
 
-		master, err := NewMasterConn(masterConn)
-		if err != nil {
-			return nil, nil, fmt.Errorf("failed to create master: %s", err)
+		var master Master
+		var slave Slave
+		var masterErr error
+		var slaveErr error
+
+		var wg sync.WaitGroup
+		wg.Add(2)
+		go func() {
+			defer wg.Done()
+			master, masterErr = NewMasterConn(masterConn)
+		}()
+		go func() {
+			defer wg.Done()
+			slave, slaveErr = NewSlaveConn(slaveConn)
+		}()
+		wg.Wait()
+
+		if masterErr != nil {
+			return nil, nil, fmt.Errorf("master creation error: %s", masterErr)
 		}
-		slave, err := NewSlaveConn(slaveConn)
-		if err != nil {
-			return nil, nil, fmt.Errorf("failed to create slave: %s", err)
+		if slaveErr != nil {
+			return nil, nil, fmt.Errorf("slave creation error: %s", slaveErr)
 		}
 		return master, slave, nil
 	}

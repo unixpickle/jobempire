@@ -20,14 +20,14 @@ type Task interface {
 type TaskChannel interface {
 	// Send sends a message to the other side of the task.
 	// It blocks until the message has been sent.
-	// It fails with an error if the other side has already
-	// disconnected.
+	// It fails with an error if the other side is already
+	// done.
 	Send(msg interface{}) error
 
 	// Receive receives the next message from the other side
 	// of the task.
 	// It blocks until a message is received.
-	// It returns io.EOF after all messages from the other
-	// side have been received.
+	// It returns an error after all messages from the other
+	// side have been received and the other side is done.
 	Receive() (interface{}, error)
 }
