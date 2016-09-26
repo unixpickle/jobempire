@@ -14,17 +14,50 @@ const (
 	pingMaxDelay = time.Minute
 )
 
+// A Master provides control over the master side of a
+// master-slave connection.
+type Master interface {
+	// StartJob creates a new job over the connection.
+	// Multiple jobs may be running simultaneously.
+	StartJob() (MasterJob, error)
+
+	// Terminate terminates the connection immediately.
+	// If any jobs were running, the slave and master
+	// will be left to handle the cleanup.
+	// All created jobs and tasks will fail with an error
+	// when they try to communicate with the remote end.
+	Terminate()
+}
+
+// A MasterJob provides control over a job.
+type MasterJob interface {
+	// Finish terminates the job.
+	// If no tasks were running, it performs a graceful
+	// shutdown of the job.
+	// If tasks were running, their connections are closed
+	// and they must handle the failure.
+	Finish() error
+
+	// Run runs a task in the context of the job.
+	// It blocks until the task has completed on both the
+	// master and the slave.
+	// It returns an error if the task fails on either end,
+	// or if the job is finished early.
+	// Multiple tasks may be run on a job simultaneously.
+	Run(t Task) error
+}
+
 type masterConn struct {
 	connector gobplexer.Connector
 }
 
-// NewMasterConnNet creates a MasterConn from a net.Conn.
+// NewMasterConn creates a Master from a net.Conn.
 // If the handshake fails, c is closed.
-func NewMasterConnNet(c net.Conn) (MasterConn, error) {
+func NewMasterConn(c net.Conn) (Master, error) {
 	return newMasterConn(gobplexer.NewConnectionConn(c))
 }
 
-func newMasterConn(rawCon gobplexer.Connection) (MasterConn, error) {
+func newMasterConn(rawCon gobplexer.Connection) (Master, error) {
 	rootCon := gobplexer.MultiplexConnector(rawCon)
 	c, err := gobplexer.KeepaliveConnector(rootCon, pingInterval, pingMaxDelay)
 	if err != nil {

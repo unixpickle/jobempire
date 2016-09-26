@@ -10,7 +10,7 @@ import (
 
 const maxTestListenAttempts = 100
 
-func TestingMasterSlave() (MasterConn, SlaveConn, error) {
+func TestingMasterSlave() (Master, Slave, error) {
 	for i := 0; i < maxTestListenAttempts; i++ {
 		port := rand.Intn(10000) + 1024
 		server, err := net.Listen("tcp", ":"+strconv.Itoa(port))
@@ -33,11 +33,11 @@ func TestingMasterSlave() (MasterConn, SlaveConn, error) {
 			return nil, nil, errors.New("failed to accept connection")
 		}
 
-		master, err := NewMasterConnNet(masterConn)
+		master, err := NewMasterConn(masterConn)
 		if err != nil {
 			return nil, nil, fmt.Errorf("failed to create master: %s", err)
 		}
-		slave, err := NewSlaveConnNet(slaveConn)
+		slave, err := NewSlaveConn(slaveConn)
 		if err != nil {
 			return nil, nil, fmt.Errorf("failed to create slave: %s", err)
 		}

@@ -19,32 +19,32 @@ var (
 	ErrBadAuth = errors.New("bad authentication credentials")
 )
 
-// NewMasterConnAuth creates an authenticated MasterConn.
+// NewMasterConnAuth creates an authenticated Master.
 // It returns ErrBadAuth if the other end does not know the
 // correct password.
 // If the handshake fails for any reason, c is closed.
-func NewMasterConnAuth(c net.Conn, password string) (MasterConn, error) {
+func NewMasterConnAuth(c net.Conn, password string) (Master, error) {
 	if err := sendChallenge(0, c, password); err != nil {
 		return nil, err
 	}
 	if err := handleChallenge(1, c, password); err != nil {
 		return nil, err
 	}
-	return NewMasterConnNet(c)
+	return NewMasterConn(c)
 }
 
-// NewSlaveConnAuth creates an authenticated SlaveConn.
+// NewSlaveConnAuth creates an authenticated Slave.
 // It returns ErrBadAuth if the other end has a different
 // password than we do.
 // If the handshake fails for any reason, c is closed.
-func NewSlaveConnAuth(c net.Conn, password string) (SlaveConn, error) {
+func NewSlaveConnAuth(c net.Conn, password string) (Slave, error) {
 	if err := handleChallenge(0, c, password); err != nil {
 		return nil, err
 	}
 	if err := sendChallenge(1, c, password); err != nil {
 		return nil, err
 	}
-	return NewSlaveConnNet(c)
+	return NewSlaveConn(c)
 }
 
 func sendChallenge(seq int, c net.Conn, password string) error {

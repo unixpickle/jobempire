@@ -7,17 +7,31 @@ import (
 	"github.com/unixpickle/gobplexer"
 )
 
+// A Slave provides a stream of jobs from a remote Master.
+type Slave interface {
+	// NextJob receives the next job from the master.
+	// This will return an error if the remote end has
+	// terminated the connection.
+	NextJob() (SlaveJob, error)
+}
+
+// A SlaveJob provides a stream of tasks from a Master.
+type SlaveJob interface {
+	// RunTasks runs the tasks from the Master.
+	RunTasks(rootDir string)
+}
+
 type slaveConn struct {
 	listener gobplexer.Listener
 }
 
-// NewSlaveConnNet creates a SlaveConn from a net.Conn.
+// NewSlaveConn creates a Slave from a net.Conn.
 // If the handshake fails, c is closed.
-func NewSlaveConnNet(c net.Conn) (SlaveConn, error) {
+func NewSlaveConn(c net.Conn) (Slave, error) {
 	return newSlaveConn(gobplexer.NewConnectionConn(c))
 }
 
-func newSlaveConn(rawCon gobplexer.Connection) (SlaveConn, error) {
+func newSlaveConn(rawCon gobplexer.Connection) (Slave, error) {
 	rootCon := gobplexer.MultiplexListener(rawCon)
 	c, err := gobplexer.KeepaliveListener(rootCon, pingInterval, pingMaxDelay)
 	if err != nil {
