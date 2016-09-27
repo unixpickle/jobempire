@@ -91,6 +91,14 @@ func (l *LiveTask) WaitLog(n int, cancel <-chan struct{}) bool {
 	return l.logNote.Wait(n, cancel)
 }
 
+// Wait waits until the tasks has finished running.
+//
+// The cancel argument specifies an optional channel which
+// cancels the wait if it is closed.
+func (l *LiveTask) Wait(cancel <-chan struct{}) {
+	l.logNote.WaitClose(cancel)
+}
+
 // Error returns an error, if there was one, from when the
 // task finished running.
 func (l *LiveTask) Error() error {

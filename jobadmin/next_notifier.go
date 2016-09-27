@@ -57,6 +57,28 @@ func (n *nextNotifier) Wait(c int, cancel <-chan struct{}) bool {
 	}
 }
 
+// WaitClose waits until the stream is closed.
+func (n *nextNotifier) WaitClose(cancel <-chan struct{}) {
+	n.countLock.Lock()
+	if n.closed {
+		n.countLock.Unlock()
+		return
+	}
+	if n.closeChan == nil {
+		n.closeChan = make(chan struct{})
+	}
+	n.countLock.Unlock()
+
+	if cancel == nil {
+		cancel = make(chan struct{})
+	}
+
+	select {
+	case <-n.closeChan:
+	case <-cancel:
+	}
+}
+
 // Notify pushes another message to the stream.
 // All waiting Goroutines will be notified.
 func (n *nextNotifier) Notify() {
