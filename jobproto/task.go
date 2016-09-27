@@ -1,7 +1,5 @@
 package jobproto
 
-const transferBufferSize = 65536
-
 // A Task implements a unit of work.
 // When a Task is sent from a master to a slave, it will
 // serialized using the gob package.
