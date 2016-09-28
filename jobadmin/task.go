@@ -34,6 +34,7 @@ func (t *Task) Copy() (*Task, error) {
 //
 //     - *jobproto.FileTransfer
 //     - *jobproto.GoRun
+//     - *jobproto.Exit
 //
 // The resulting JSON object has fields for each of those
 // types (e.g. a field named "GoRun").
@@ -48,6 +49,8 @@ func (t *Task) MarshalJSON() ([]byte, error) {
 		res.FileTransfer = task
 	case *jobproto.GoRun:
 		res.GoRun = task
+	case *jobproto.Exit:
+		res.Exit = task
 	default:
 		return nil, fmt.Errorf("unsupported task type: %T", t.Task)
 	}
@@ -65,6 +68,8 @@ func (t *Task) UnmarshalJSON(d []byte) error {
 		t.Task = mt.FileTransfer
 	case mt.GoRun != nil:
 		t.Task = mt.GoRun
+	case mt.Exit != nil:
+		t.Task = mt.Exit
 	default:
 		return errors.New("missing task to unmarshal")
 	}
@@ -74,4 +79,5 @@ func (t *Task) UnmarshalJSON(d []byte) error {
 type marshalTask struct {
 	FileTransfer *jobproto.FileTransfer
 	GoRun        *jobproto.GoRun
+	Exit         *jobproto.Exit
 }
