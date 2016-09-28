@@ -259,7 +259,7 @@ func (s *Scheduler) reschedule(jobs []*Job, masters []*LiveMaster, doneChan chan
 	}
 
 	pl := newPriorityList(jobs, jobCounts)
-	for {
+	for pl.TotalPriority > 0 {
 		jobIdx := pl.Random()
 		job := pl.Jobs[jobIdx]
 		var master *LiveMaster
@@ -267,12 +267,17 @@ func (s *Scheduler) reschedule(jobs []*Job, masters []*LiveMaster, doneChan chan
 			if cpuCounts[i] < masters[i].SlaveInfo().MaxProcs {
 				master = masters[i]
 				cpuCounts[i] += job.NumCPU
+				break
 			}
 		}
 		if master == nil {
 			break
 		}
 		s.startJob(job, master, doneChan)
+		jobCounts[job.ID]++
+		if jobCounts[job.ID] >= job.MaxInstances {
+			pl.Remove(jobIdx)
+		}
 	}
 }
 
