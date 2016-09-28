@@ -129,10 +129,15 @@ func (l *LiveJob) runJob() {
 			return
 		}
 	}
-	l.done(l.masterJob.Close())
+	l.done(nil)
 }
 
 func (l *LiveJob) done(e error) {
+	if e == nil {
+		e = l.masterJob.Close()
+	} else {
+		l.masterJob.Close()
+	}
 	if e != nil {
 		l.resLock.Lock()
 		l.resError = e
