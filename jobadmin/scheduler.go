@@ -1,9 +1,12 @@
 package jobadmin
 
 import (
+	"errors"
 	"math/rand"
 	"sync"
 )
+
+var errSchedulerShutdown = errors.New("scheduler is shutdown")
 
 type schedJob struct {
 	Job    *Job
@@ -17,7 +20,7 @@ type schedMasterReq struct {
 	Auto chan<- []bool
 }
 
-type schedAutoReq struct {
+type schedSetMaster struct {
 	Master *LiveMaster
 	Auto   bool
 }
@@ -37,11 +40,11 @@ type Scheduler struct {
 	masterNote nextNotifier
 
 	newJobs    chan []*Job
-	newMaster  chan *LiveMaster
+	newMaster  chan *schedSetMaster
 	runJob     chan *schedJob
 	getJobs    chan chan<- []*Job
 	getMasters chan *schedMasterReq
-	setAuto    chan *schedAutoReq
+	setAuto    chan *schedSetMaster
 }
 
 // NewScheduler creates an active scheduler.
@@ -51,11 +54,11 @@ func NewScheduler() *Scheduler {
 	s := &Scheduler{
 		shutdown:   make(chan struct{}),
 		newJobs:    make(chan []*Job),
-		newMaster:  make(chan *LiveMaster),
+		newMaster:  make(chan *schedSetMaster),
 		runJob:     make(chan *schedJob),
 		getJobs:    make(chan chan<- []*Job),
 		getMasters: make(chan *schedMasterReq),
-		setAuto:    make(chan *schedAutoReq),
+		setAuto:    make(chan *schedSetMaster),
 	}
 	go s.runLoop()
 	return s
@@ -74,16 +77,118 @@ func (s *Scheduler) Terminate() {
 	}
 }
 
+// Terminated returns true if the scheduler has been
+// terminated.
+// Even if this returns true, some masters may still be
+// running while they wait to shutdown.
+func (s *Scheduler) Terminated() bool {
+	select {
+	case <-s.shutdown:
+		return false
+	default:
+		return true
+	}
+}
+
+// Running returns true if the scheduler has not fully
+// finished terminating.
+func (s *Scheduler) Running() bool {
+	return !s.masterNote.Closed()
+}
+
+// Masters returns all of the masters, as well as a flag
+// for each one indicating whether or not the master is
+// set to be auto-scheduled.
+//
+// This fails if the scheduler has been terminated.
+func (s *Scheduler) Masters() ([]*LiveMaster, []bool, error) {
+	res := make(chan []*LiveMaster, 1)
+	auto := make(chan []bool, 1)
+	select {
+	case <-s.shutdown:
+		return nil, nil, errSchedulerShutdown
+	case s.getMasters <- &schedMasterReq{res, auto}:
+		return <-res, <-auto, nil
+	}
+}
+
+// AddMaster adds a LiveMaster to the master pool.
+// The auto parameter specifies whether or not the master
+// should have jobs automatically scheduled for it.
+//
+// This fails if the scheduler has been terminated.
+func (s *Scheduler) AddMaster(l *LiveMaster, auto bool) error {
+	select {
+	case <-s.shutdown:
+		return errSchedulerShutdown
+	case s.newMaster <- &schedSetMaster{l, auto}:
+		return nil
+	}
+}
+
+// SetAuto sets whether or not a given master should have
+// jobs automatically scheduled for it.
+// will be auto-scheduled.
+func (s *Scheduler) SetAuto(m *LiveMaster, auto bool) {
+	select {
+	case <-s.shutdown:
+		return
+	case s.setAuto <- &schedSetMaster{m, auto}:
+	}
+}
+
+// WaitMasters waits for more masters to be added.
+// It behaves like LiveMaster.WaitJobs.
+func (s *Scheduler) WaitMasters(n int, cancel <-chan struct{}) bool {
+	return s.masterNote.Wait(n, cancel)
+}
+
+// Wait waits for the scheduler to be terminated and fully
+// shutdown.
+//
+// The cancel channel specifies an optional channel to
+// cancel the wait if it is closed.
+func (s *Scheduler) Wait(cancel <-chan struct{}) {
+	s.masterNote.WaitClose(nil)
+}
+
+// Jobs returns a read-only copy of the current jobs in
+// the scheduler's job pool.
+//
+// This fails if the scheduler has been terminated.
+func (s *Scheduler) Jobs() ([]*Job, error) {
+	resChan := make(chan []*Job, 1)
+	select {
+	case <-s.shutdown:
+		return nil, errSchedulerShutdown
+	case s.getJobs <- resChan:
+		return <-resChan, nil
+	}
+}
+
+// SetJobs sets the scheduler's job pool.
+//
+// This fails if the scheduler has been terminated or if
+// any of the jobs cannot be copied.
+func (s *Scheduler) SetJobs(j []*Job) error {
+	select {
+	case <-s.shutdown:
+		return errSchedulerShutdown
+	case s.newJobs <- j:
+		return nil
+	}
+}
+
 func (s *Scheduler) runLoop() {
 	var jobs []*Job
 	var masters []*LiveMaster
 	var auto []bool
 
 	defer func() {
-		s.masterNote.Close()
 		for _, m := range masters {
 			m.Cancel()
 		}
+		s.masterNote.Close()
 	}()
 
 	doneChan := make(chan struct{}, 1)
@@ -104,8 +209,8 @@ func (s *Scheduler) runLoop() {
 		case <-doneChan:
 			s.reschedule(jobs, s.availableMasters(masters, auto), doneChan)
 		case m := <-s.newMaster:
-			masters = append(masters, m)
-			auto = append(auto, false)
+			masters = append(masters, m.Master)
+			auto = append(auto, m.Auto)
 			s.masterNote.Notify()
 		case j := <-s.runJob:
 			s.startJob(j.Job, j.Master, doneChan)
