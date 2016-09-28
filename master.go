@@ -40,6 +40,8 @@ func MasterMain(slavePort, adminPort int, slavePass, adminPass string, jobFile s
 		os.Exit(1)
 	}
 
+	log.Println("Listening on ports", slavePort, "and", adminPort)
+
 	defer slaveListener.Close()
 	defer adminListener.Close()
 
@@ -64,8 +66,10 @@ func MasterMain(slavePort, adminPort int, slavePass, adminPass string, jobFile s
 			go func() {
 				master, err := jobproto.NewMasterConnAuth(conn, slavePass)
 				if err != nil {
+					log.Println("Slave", conn.RemoteAddr(), "failed to authenticate.")
 					return
 				}
+				log.Println("Slave", conn.RemoteAddr(), "successfully joined.")
 				m.Scheduler.AddMaster(jobadmin.RunLiveMaster(master), false)
 			}()
 		}
