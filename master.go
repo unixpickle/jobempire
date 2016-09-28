@@ -78,7 +78,7 @@ func MasterMain(slavePort, adminPort int, slavePass, adminPass string, jobFile s
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 	<-sigChan
-	log.Print("Shutting down...")
+	fmt.Println("\nShutting down...")
 
 	m.Scheduler.Terminate()
 	m.Scheduler.Wait(nil)
