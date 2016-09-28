@@ -85,9 +85,9 @@ func (s *Scheduler) Terminate() {
 func (s *Scheduler) Terminated() bool {
 	select {
 	case <-s.shutdown:
-		return false
-	default:
 		return true
+	default:
+		return false
 	}
 }
 
