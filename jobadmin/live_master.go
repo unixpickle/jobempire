@@ -41,6 +41,11 @@ func RunLiveMaster(m jobproto.Master) *LiveMaster {
 	return lm
 }
 
+// SlaveInfo returns information about the slave.
+func (l *LiveMaster) SlaveInfo() jobproto.SlaveInfo {
+	return l.master.SlaveInfo()
+}
+
 // Accepting returns false if the master has been closed
 // or is in the process of a graceful shutdown.
 func (l *LiveMaster) Accepting() bool {

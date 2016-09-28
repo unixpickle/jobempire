@@ -39,8 +39,9 @@ type Job struct {
 	// NumCPU specifies the maximum number of CPUs this job
 	// will demand.
 	//
-	// The scheduler will never add a job to a slave if doing
-	// so will push the slave's total MaxCPU sum to a value
+	// The scheduler will never add a job to a slave if the
+	// slave is already running something and adding the
+	// job will push the slave's total MaxCPU sum to a value
 	// greater than the slave's MaxProcs value.
 	//
 	// This may be 0 for jobs that are not CPU-bound.
