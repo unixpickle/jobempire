@@ -1,0 +1,13 @@
+<nav id="header">
+  {{if eq . "jobs"}}
+  <a class="header-item header-item-cur" href="/jobs">Jobs</a>
+  {{else}}
+  <a class="header-item" href="/jobs">Jobs</a>
+  {{end}}
+
+  {{if eq . "slaves"}}
+  <a class="header-item header-item-cur" href="/slaves">Slaves</a>
+  {{else}}
+  <a class="header-item" href="/slaves">Slaves</a>
+  {{end}}
+</nav>
