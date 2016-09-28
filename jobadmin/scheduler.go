@@ -2,6 +2,7 @@ package jobadmin
 
 import (
 	"errors"
+	"fmt"
 	"math/rand"
 	"sync"
 )
@@ -171,10 +172,18 @@ func (s *Scheduler) Jobs() ([]*Job, error) {
 // This fails if the scheduler has been terminated or if
 // any of the jobs cannot be copied.
 func (s *Scheduler) SetJobs(j []*Job) error {
+	jobsCopy := make([]*Job, len(j))
+	for i, x := range j {
+		c, err := x.Copy()
+		if err != nil {
+			return fmt.Errorf("copy job %d: %s", i, err)
+		}
+		jobsCopy[i] = c
+	}
 	select {
 	case <-s.shutdown:
 		return errSchedulerShutdown
-	case s.newJobs <- j:
+	case s.newJobs <- jobsCopy:
 		return nil
 	}
 }
