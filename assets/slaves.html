@@ -1,0 +1,23 @@
+{{define "slaves"}}
+<!doctype html>
+<html>
+  <head>
+    {{template "htmlHeader"}}
+
+    <title>Slaves (jobempire)</title>
+
+    <script src="assets/scripts/pentagons.js"></script>
+    <link rel="stylesheet" href="assets/styles/style.css" type="text/css">
+  </head>
+  <body>
+    {{template "navHeader" "slaves"}}
+    {{if $masters := masters .}}
+      {{range $masters}}
+        {{/* output an element describing the master */}}
+      {{end}}
+    {{else}}
+      <div id="no-slaves" class="item-pane empty-list-pane">No Slaves</div>
+    {{end}}
+  </body>
+</html>
+{{end}}

@@ -4,6 +4,7 @@ html, body {
   font-family: sans-serif;
 }
 
+
 #header {
   position: fixed;
   top: 0;
@@ -38,11 +39,12 @@ html, body {
   color: #777;
 }
 
+
 .item-pane {
   background-color: rgba(255, 255, 255, 0.7);
 }
 
-#no-jobs {
+.empty-list-pane {
   position: absolute;
   top: calc(50% - 100px);
   left: calc(50% - 150px);

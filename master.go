@@ -99,7 +99,8 @@ func readJobs(file string) ([]*jobadmin.Job, error) {
 }
 
 func parseTemplates() *template.Template {
-	files := []string{"assets/header.html", "assets/jobs.html", "assets/login.html"}
+	files := []string{"assets/header.html", "assets/jobs.html", "assets/login.html",
+		"assets/slaves.html"}
 	var body bytes.Buffer
 	for _, f := range files {
 		data, err := Asset(f)
@@ -108,5 +109,26 @@ func parseTemplates() *template.Template {
 		}
 		body.Write(data)
 	}
-	return template.Must(template.New("master").Parse(body.String()))
+	res := template.New("master")
+	res.Funcs(template.FuncMap{
+		"masters": templateMasters,
+	})
+	return template.Must(res.Parse(body.String()))
+}
+
+type masterAutoPair struct {
+	Master *jobadmin.LiveMaster
+	Auto   bool
+}
+
+func templateMasters(s *jobadmin.Scheduler) ([]masterAutoPair, error) {
+	masters, auto, err := s.Masters()
+	if err != nil {
+		return nil, err
+	}
+	pairs := make([]masterAutoPair, len(masters))
+	for i, m := range masters {
+		pairs[i] = masterAutoPair{m, auto[i]}
+	}
+	return pairs, nil
 }

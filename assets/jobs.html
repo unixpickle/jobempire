@@ -12,9 +12,11 @@
   <body>
     {{template "navHeader" "jobs"}}
     {{if $jobs := .Jobs}}
-      {{/* TODO: loop through jobs here. */}}
+      {{range $jobs}}
+        {{/* TODO: output element describing job here. */}}
+      {{end}}
     {{else}}
-      <div id="no-jobs" class="item-pane">No Jobs</div>
+      <div id="no-jobs" class="item-pane empty-list-pane">No Jobs</div>
     {{end}}
   </body>
 </html>

@@ -55,37 +55,11 @@ func (m *MasterHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch cleanPath {
 	case "/jobs":
 		m.ServeJobsPage(w, r)
+	case "/slaves":
+		m.ServeSlavesPage(w, r)
 	default:
 		m.serveNotFound(w, r)
 	}
-}
-
-func (m *MasterHandler) serveAsset(w http.ResponseWriter, r *http.Request, cleanPath string) {
-	if asset, err := Asset(cleanPath[1:]); err != nil {
-		m.serveNotFound(w, r)
-	} else {
-		mimeType := mime.TypeByExtension(path.Ext(cleanPath))
-		if mimeType == "" {
-			mimeType = "text/plain"
-		}
-		w.Header().Set("Content-Type", mimeType)
-		w.Header().Set("Content-Length", strconv.Itoa(len(asset)))
-		w.Write(asset)
-	}
-}
-
-func (m *MasterHandler) serveNotFound(w http.ResponseWriter, r *http.Request) {
-	http.NotFound(w, r)
-}
-
-func (m *MasterHandler) saveJobs(jobs []*jobadmin.Job) error {
-	encoded, err := json.Marshal(jobs)
-	if err != nil {
-		return err
-	}
-	m.JobsLock.Lock()
-	defer m.JobsLock.Unlock()
-	return ioutil.WriteFile(m.JobsPath, encoded, 0755)
 }
 
 func (m *MasterHandler) ServeLoginPage(w http.ResponseWriter, r *http.Request) {
@@ -103,9 +77,41 @@ func (m *MasterHandler) ServeJobsPage(w http.ResponseWriter, r *http.Request) {
 	m.serveTemplate(w, "jobs", m.Scheduler)
 }
 
+func (m *MasterHandler) ServeSlavesPage(w http.ResponseWriter, r *http.Request) {
+	m.serveTemplate(w, "slaves", m.Scheduler)
+}
+
+func (m *MasterHandler) serveAsset(w http.ResponseWriter, r *http.Request, cleanPath string) {
+	if asset, err := Asset(cleanPath[1:]); err != nil {
+		m.serveNotFound(w, r)
+	} else {
+		mimeType := mime.TypeByExtension(path.Ext(cleanPath))
+		if mimeType == "" {
+			mimeType = "text/plain"
+		}
+		w.Header().Set("Content-Type", mimeType)
+		w.Header().Set("Content-Length", strconv.Itoa(len(asset)))
+		w.Write(asset)
+	}
+}
+
 func (m *MasterHandler) serveTemplate(w http.ResponseWriter, name string, obj interface{}) {
 	w.Header().Set("Content-Type", "text/html")
 	if err := m.Templates.ExecuteTemplate(w, name, obj); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func (m *MasterHandler) serveNotFound(w http.ResponseWriter, r *http.Request) {
+	http.NotFound(w, r)
+}
+
+func (m *MasterHandler) saveJobs(jobs []*jobadmin.Job) error {
+	encoded, err := json.Marshal(jobs)
+	if err != nil {
+		return err
+	}
+	m.JobsLock.Lock()
+	defer m.JobsLock.Unlock()
+	return ioutil.WriteFile(m.JobsPath, encoded, 0755)
 }
