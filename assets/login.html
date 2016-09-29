@@ -1,0 +1,19 @@
+{{define "login"}}
+<!doctype html>
+<html>
+  <head>
+    {{template "htmlHeader"}}
+
+    <title>Login (jobempire)</title>
+
+    <script src="assets/scripts/pentagons.js"></script>
+    <link rel="stylesheet" href="assets/styles/login.css" type="text/css">
+  </head>
+  <body>
+    <form method="POST" autocomplete="off">
+      <label>Login</label>
+      <input type="password" name="password" id="password" autocomplete="off">
+    </form>
+  </body>
+</html>
+{{end}}
