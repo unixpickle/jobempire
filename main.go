@@ -31,13 +31,17 @@ func main() {
 		configPath := os.Args[6]
 		MasterMain(slavePort, adminPort, slavePass, adminPass, configPath)
 	case "slave":
-		host := os.Args[1]
-		port, err := strconv.Atoi(os.Args[2])
+		if len(os.Args) != 5 {
+			dieUsage()
+		}
+		host := os.Args[2]
+		port, err := strconv.Atoi(os.Args[3])
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Invalid master port:", os.Args[2])
 			os.Exit(1)
 		}
-		SlaveMain(host, port)
+		password := os.Args[4]
+		SlaveMain(host, port, password)
 	default:
 		dieUsage()
 	}
