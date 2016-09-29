@@ -51,16 +51,16 @@ func (l *LiveMaster) SlaveInfo() jobproto.SlaveInfo {
 func (l *LiveMaster) Accepting() bool {
 	select {
 	case <-l.shutdown:
-		return true
-	default:
 		return false
+	default:
+		return true
 	}
 }
 
 // Running returns whether or not the master is fully
 // disconnected.
 func (l *LiveMaster) Running() bool {
-	return l.jobsNote.Closed()
+	return !l.jobsNote.Closed()
 }
 
 // Shutdown performs a graceful shutdown of the master,

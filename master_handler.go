@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"html/template"
+	"io"
 	"io/ioutil"
 	"mime"
 	"net/http"
@@ -96,9 +98,13 @@ func (m *MasterHandler) serveAsset(w http.ResponseWriter, r *http.Request, clean
 }
 
 func (m *MasterHandler) serveTemplate(w http.ResponseWriter, name string, obj interface{}) {
-	w.Header().Set("Content-Type", "text/html")
-	if err := m.Templates.ExecuteTemplate(w, name, obj); err != nil {
+	var buf bytes.Buffer
+	if err := m.Templates.ExecuteTemplate(&buf, name, obj); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+	} else {
+		w.Header().Set("Content-Type", "text/html")
+		w.Header().Set("Content-Length", strconv.Itoa(buf.Len()))
+		io.Copy(w, &buf)
 	}
 }
 

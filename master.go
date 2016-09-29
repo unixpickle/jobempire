@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"reflect"
 	"strconv"
 	"syscall"
 
@@ -100,7 +101,7 @@ func readJobs(file string) ([]*jobadmin.Job, error) {
 
 func parseTemplates() *template.Template {
 	files := []string{"assets/header.html", "assets/jobs.html", "assets/login.html",
-		"assets/slaves.html"}
+		"assets/slaves.html", "assets/util.html"}
 	var body bytes.Buffer
 	for _, f := range files {
 		data, err := Asset(f)
@@ -112,6 +113,8 @@ func parseTemplates() *template.Template {
 	res := template.New("master")
 	res.Funcs(template.FuncMap{
 		"masters": templateMasters,
+		"pair":    templatePair,
+		"reverse": templateReverse,
 	})
 	return template.Must(res.Parse(body.String()))
 }
@@ -131,4 +134,27 @@ func templateMasters(s *jobadmin.Scheduler) ([]masterAutoPair, error) {
 		pairs[i] = masterAutoPair{m, auto[i]}
 	}
 	return pairs, nil
+}
+
+func templatePair(x, y interface{}) []interface{} {
+	return []interface{}{x, y}
+}
+
+func templateReverse(x interface{}) (interface{}, error) {
+	oldVal := reflect.ValueOf(x)
+	if oldVal.Kind() != reflect.Slice {
+		return nil, fmt.Errorf("reverse: expected slice but got %T", x)
+	}
+
+	slice := reflect.MakeSlice(reflect.TypeOf(x), oldVal.Len(), oldVal.Len())
+	reflect.Copy(slice, oldVal)
+	for i := 0; i < slice.Len()/2; i++ {
+		slot1 := slice.Index(i)
+		slot2 := slice.Index(slice.Len() - (i + 1))
+		val1 := reflect.ValueOf(slot1.Interface())
+		val2 := reflect.ValueOf(slot2.Interface())
+		slot1.Set(val2)
+		slot2.Set(val1)
+	}
+	return slice.Interface(), nil
 }

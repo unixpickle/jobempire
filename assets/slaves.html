@@ -12,12 +12,37 @@
   <body>
     {{template "navHeader" "slaves"}}
     {{if $masters := masters .}}
-      {{range $masters}}
-        {{/* output an element describing the master */}}
+      <div id="slave-list" class="pane-grid">
+      {{range reverse $masters}}
+        <div class="item-pane slave-pane {{template "slaveRunningClass" .}}">
+          {{with .Master.SlaveInfo}}
+          {{template "pane" pair "CPUs" .NumCPU}}
+          {{template "pane" pair "Max Procs" .MaxProcs}}
+          {{template "pane" pair "GOOS" .OS}}
+          {{template "pane" pair "GOARCH" .Arch}}
+          {{end}}
+          {{template "pane" pair "Total Jobs" .Master.JobCount}}
+          {{if .Master.Accepting}}
+          <label class="slave-status slave-status-accepting">Accepting</label>
+          {{else if .Master.Running}}
+          <label class="slave-status slave-status-halting">Halting</label>
+          {{else}}
+          <label class="slave-status slave-status-stopped">Stopped</label>
+          {{end}}
+        </div>
       {{end}}
+      </div>
     {{else}}
       <div id="no-slaves" class="item-pane empty-list-pane">No Slaves</div>
     {{end}}
   </body>
 </html>
+{{end}}
+
+{{define "slaveRunningClass"}}
+{{- if .Master.Running -}}
+slave-pane-running
+{{- else -}}
+slave-pane-not-running
+{{- end -}}
 {{end}}
