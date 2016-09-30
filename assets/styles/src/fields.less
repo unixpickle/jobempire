@@ -1,0 +1,55 @@
+@input-height: 30px;
+
+input {
+  border: 1px solid @theme-color;
+  height: @input-height;
+  font-size: 18px;
+  box-sizing: border-box;
+  padding: 0 5px;
+}
+
+.field(@height) {
+  width: 100%;
+  height: @height;
+
+  label {
+    line-height: @height;
+    height: @height;
+  }
+}
+
+.message-field {
+  .field(28px);
+
+  .field-value {
+    float: none;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+.label-field {
+  .field(28px);
+}
+
+.input-field {
+  .field(30px);
+  margin: 10px 0;
+
+  input {
+    width: 120px;
+  }
+}
+
+.field-label {
+  width: ~"calc(50% - 3px)";
+  float: left;
+  text-align: right;
+  font-weight: bold;
+}
+
+.field-value {
+  width: ~"calc(50% - 3px)";
+  float: right;
+  text-align: left;
+}

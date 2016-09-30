@@ -17,11 +17,11 @@
         <div class="item-pane item-pane-clickable job-pane"
              onclick="location='/editjob?id={{.ID}}'">
           <input type="hidden" class="job-id" value="{{.ID}}">
-          {{template "pane" pair "Name" .Name}}
-          {{template "pane" pair "Tasks" (len .Tasks)}}
-          {{template "pane" pair "Max Inst." .MaxInstances}}
-          {{template "pane" pair "Priority" .Priority}}
-          {{template "pane" pair "NumCPU" .NumCPU}}
+          {{template "labelField" pair "Name" .Name}}
+          {{template "labelField" pair "Tasks" (len .Tasks)}}
+          {{template "labelField" pair "Max Inst." .MaxInstances}}
+          {{template "labelField" pair "Priority" .Priority}}
+          {{template "labelField" pair "NumCPU" .NumCPU}}
         </div>
       {{end}}
       </div>

@@ -16,18 +16,20 @@
       {{range reverse $masters}}
         <div class="item-pane slave-pane {{template "slaveRunningClass" .}}">
           {{with .Master.SlaveInfo}}
-          {{template "pane" pair "CPUs" .NumCPU}}
-          {{template "pane" pair "Max Procs" .MaxProcs}}
-          {{template "pane" pair "GOOS" .OS}}
-          {{template "pane" pair "GOARCH" .Arch}}
+            {{template "labelField" pair "CPUs" .NumCPU}}
+            {{template "labelField" pair "Max Procs" .MaxProcs}}
+            {{template "labelField" pair "GOOS" .OS}}
+            {{template "labelField" pair "GOARCH" .Arch}}
           {{end}}
-          {{template "pane" pair "Total Jobs" .Master.JobCount}}
+
+          {{template "labelField" pair "Total Jobs" .Master.JobCount}}
+
           {{if .Master.Accepting}}
-          <label class="slave-status slave-status-accepting">Accepting</label>
+            {{template "messageField" "Accepting"}}
           {{else if .Master.Running}}
-          <label class="slave-status slave-status-halting">Halting</label>
+            {{template "messageField" "Halting"}}
           {{else}}
-          <label class="slave-status slave-status-stopped">Stopped</label>
+            {{template "messageField" "Stopped"}}
           {{end}}
         </div>
       {{end}}

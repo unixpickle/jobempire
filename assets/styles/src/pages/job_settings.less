@@ -2,7 +2,7 @@
 
 #job-settings {
   position: absolute;
-  top: calc(@header-size + 10px);
+  top: (@header-size + 10px);
 }
 
 @media (min-width: @job-settings-width) {
@@ -23,6 +23,10 @@
   width: 100%;
   padding: 10px;
   box-sizing: border-box;
+}
+
+.job-settings-pane {
+  margin-top: 10px;
 }
 
 #job-name {
