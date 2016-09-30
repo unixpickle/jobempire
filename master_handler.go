@@ -68,6 +68,8 @@ func (m *MasterHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		m.ServeEditJobPage(w, r)
 	case "/savejob":
 		m.ServeSaveJob(w, r)
+	case "/deletejob":
+		m.ServeDeleteJob(w, r)
 	default:
 		m.serveNotFound(w, r)
 	}
@@ -132,6 +134,14 @@ func (m *MasterHandler) ServeSaveJob(w http.ResponseWriter, r *http.Request) {
 		m.serveError(w, err.Error(), http.StatusInternalServerError)
 	} else {
 		http.Redirect(w, r, "/jobs", http.StatusSeeOther)
+	}
+}
+
+func (m *MasterHandler) ServeDeleteJob(w http.ResponseWriter, r *http.Request) {
+	if err := m.deleteJob(r.FormValue("id")); err == nil {
+		http.Redirect(w, r, "/jobs", http.StatusSeeOther)
+	} else {
+		m.serveError(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
@@ -215,6 +225,39 @@ func (m *MasterHandler) modifyJob(job *jobadmin.Job) error {
 
 	if !found {
 		return fmt.Errorf("job ID not found: %s", job.ID)
+	}
+
+	if err := m.Scheduler.SetJobs(newJobs); err != nil {
+		return err
+	}
+
+	return m.saveJobs(newJobs)
+}
+
+func (m *MasterHandler) deleteJob(id string) error {
+	m.JobsLock.Lock()
+	defer m.JobsLock.Unlock()
+
+	jobs, err := m.Scheduler.Jobs()
+	if err != nil {
+		return err
+	}
+
+	newJobs := make([]*jobadmin.Job, len(jobs))
+	copy(newJobs, jobs)
+
+	var found bool
+	for i, x := range newJobs {
+		if x.ID == id {
+			copy(newJobs[i:], newJobs[i+1:])
+			newJobs = newJobs[:len(newJobs)-1]
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		return fmt.Errorf("job ID not found: %s", id)
 	}
 
 	if err := m.Scheduler.SetJobs(newJobs); err != nil {

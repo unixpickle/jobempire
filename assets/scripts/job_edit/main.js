@@ -23,7 +23,8 @@
   }
 
   function deleteJob() {
-    // TODO: redirect to a deletion API.
+    var id = document.getElementById('job-id').value;
+    location = '/deletejob?id=' + id;
   }
 
   window.addEventListener('load', function() {
