@@ -1,3 +1,5 @@
+@item-pane-field-height: 28px;
+
 .item-pane {
   background-color: rgba(255, 255, 255, 0.7);
 }
@@ -24,14 +26,14 @@
   height: 200px;
   line-height: 200px;
   text-align: center;
-  color: #65bcd4;
+  color: @theme-color;
   font-weight: 300px;
   font-size: 30px;
 }
 
 .pane-grid {
   position: absolute;
-  top: 50px;
+  top: calc(@header-size + 10px);
   left: 10px;
   width: ~"calc(100% - 20px)";
   text-align: center;
@@ -46,12 +48,12 @@
 
 .item-pane-field {
   width: 100%;
-  height: 28px;
+  height: @item-pane-field-height;
 }
 
 .item-pane-field label {
-  line-height: 28px;
-  height: 28px;
+  line-height: @item-pane-field-height;
+  height: @item-pane-field-height;
   width: ~"calc(50% - 3px)";
 }
 

@@ -1,3 +1,8 @@
+@button-color: #aaa;
+@button-hover-color: darken(@button-color, 20%);
+@delete-button-color: #d4718f;
+@delete-button-hover-color: darken(@delete-button-color, 20%);
+
 button {
   border: none;
   box-sizing: border-box;
@@ -7,7 +12,7 @@ button {
   line-height: 28px;
   font-size: 16px;
   cursor: pointer;
-  background-color: #aaa;
+  background-color: @button-color;
   color: white;
 }
 
@@ -16,13 +21,13 @@ button:focus {
 }
 
 button:hover {
-  background-color: #888;
+  background-color: @button-hover-color;
 }
 
 .delete-button {
-  background-color: #d4718f;
+  background-color: @delete-button-color;
 }
 
 .delete-button:hover {
-  background-color: #a95972;
+  background-color: @delete-button-hover-color;
 }

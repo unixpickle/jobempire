@@ -21,13 +21,13 @@ button:focus {
   outline: 0;
 }
 button:hover {
-  background-color: #888;
+  background-color: #777777;
 }
 .delete-button {
   background-color: #d4718f;
 }
 .delete-button:hover {
-  background-color: #a95972;
+  background-color: #ab3458;
 }
 #header {
   position: fixed;
@@ -86,7 +86,7 @@ button:hover {
 }
 .pane-grid {
   position: absolute;
-  top: 50px;
+  top: calc(54px);
   left: 10px;
   width: calc(100% - 20px);
   text-align: center;
@@ -137,12 +137,12 @@ button:hover {
 }
 #job-settings {
   position: absolute;
-  top: 54px;
+  top: calc(54px);
 }
 @media (min-width: 600px) {
   #job-settings {
-    width: 580px;
-    left: calc(50% - 290px);
+    width: 600px;
+    left: calc(50% -  290px);
   }
 }
 @media (max-width: 600px) {
