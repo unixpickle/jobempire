@@ -29,6 +29,12 @@ button:hover {
 .delete-button:hover {
   background-color: #ab3458;
 }
+.button-no-text {
+  color: transparent;
+  overflow: hidden;
+  line-height: 1 !important;
+  cursor: pointer;
+}
 #header {
   position: fixed;
   top: 0;
@@ -124,12 +130,36 @@ button:hover {
     left: 12px;
   }
 }
+.pane-buttons {
+  margin-top: 10px;
+}
+.pane-buttons::after {
+  content: ' ';
+  display: block;
+  clear: both;
+}
+.pane-buttons > button {
+  float: right;
+  margin-left: 10px;
+  width: 100px;
+}
+.pane-buttons[data-center="true"] {
+  text-align: center;
+  margin-bottom: 10px;
+}
+.pane-buttons[data-center="true"] button {
+  float: none;
+  margin: 0 3px;
+}
 input {
   border: 1px solid #65bcd4;
   height: 30px;
   font-size: 18px;
   box-sizing: border-box;
   padding: 0 5px;
+}
+input[type="checkbox"] {
+  height: auto;
 }
 input:focus {
   outline: 0;
@@ -146,6 +176,8 @@ input:focus {
   float: none;
   text-align: center;
   width: 100%;
+  display: inline-block;
+  font-style: italic;
 }
 .label-field {
   width: 100%;
@@ -155,26 +187,57 @@ input:focus {
   line-height: 28px;
   height: 28px;
 }
-.input-field {
+.number-field {
   width: 100%;
   height: 30px;
   margin: 10px 0;
 }
-.input-field label {
+.number-field label {
   line-height: 30px;
   height: 30px;
 }
-.input-field input {
+.number-field input {
   width: 120px;
 }
+.text-field {
+  width: 100%;
+  height: 30px;
+  margin: 10px 0;
+}
+.text-field label {
+  line-height: 30px;
+  height: 30px;
+}
+.text-field input {
+  width: 200px;
+}
+.check-field {
+  width: 100%;
+  height: 30px;
+  margin: 10px 0;
+}
+.check-field label {
+  line-height: 30px;
+  height: 30px;
+}
+.check-field input {
+  width: auto;
+}
+.check-field .field-value {
+  line-height: 30px;
+  height: 100%;
+}
+.field-half-width {
+  width: calc(50% -  3px);
+}
 .field-label {
-  width: calc(50% - 3px);
+  width: calc(50% -  3px);
   float: left;
   text-align: right;
   font-weight: bold;
 }
 .field-value {
-  width: calc(50% - 3px);
+  width: calc(50% -  3px);
   float: right;
   text-align: left;
 }
@@ -206,18 +269,46 @@ input:focus {
 #job-name:focus {
   outline: 0;
 }
-#job-actions {
-  margin-top: 10px;
+.task {
+  position: relative;
 }
-#job-actions::after {
-  content: ' ';
-  display: block;
-  clear: both;
+.task-controls {
+  position: absolute;
+  top: 3px;
+  left: 3px;
 }
-#job-actions > button {
-  float: right;
-  margin-left: 10px;
-  width: 90px;
+.task-controls button {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  float: left;
+  margin-right: 5px;
+  color: transparent;
+  overflow: hidden;
+  line-height: 1 !important;
+  cursor: pointer;
+  background-image: url('../images/task_buttons.svg');
+  background-size: 300% 200%;
+  background-repeat: no-repeat;
+  background-color: transparent;
+}
+.task-controls .task-delete {
+  background-position: top left;
+}
+.task-controls .task-delete:hover {
+  background-position: bottom left;
+}
+.task-controls .task-moveup {
+  background-position: top center;
+}
+.task-controls .task-moveup:hover {
+  background-position: bottom center;
+}
+.task-controls .task-movedown {
+  background-position: top right;
+}
+.task-controls .task-movedown:hover {
+  background-position: bottom right;
 }
 #login {
   background-color: rgba(255, 255, 255, 0.7);

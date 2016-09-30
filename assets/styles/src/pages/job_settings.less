@@ -11,18 +11,47 @@
   outline: 0;
 }
 
-#job-actions {
-  margin-top: 10px;
+.task {
+  position: relative;
 }
 
-#job-actions::after {
-  content: ' ';
-  display: block;
-  clear: both;
-}
+.task-controls {
+  position: absolute;
+  top: 3px;
+  left: 3px;
 
-#job-actions > button {
-  float: right;
-  margin-left: 10px;
-  width: 90px;
+  button {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    float: left;
+    margin-right: 5px;
+    .button-no-text;
+
+    background-image: url('../images/task_buttons.svg');
+    background-size: 300% 200%;
+    background-repeat: no-repeat;
+    background-color: transparent;
+  }
+
+  .task-delete {
+    background-position: top left;
+    &:hover {
+      background-position: bottom left;
+    }
+  }
+
+  .task-moveup {
+    background-position: top center;
+    &:hover {
+      background-position: bottom center;
+    }
+  }
+
+  .task-movedown {
+    background-position: top right;
+    &:hover {
+      background-position: bottom right;
+    }
+  }
 }

@@ -12,10 +12,29 @@
 {{end}}
 
 {{define "inputField"}}
-  <div class="input-field">
+  <div class="{{index . 0}}">
+    {{with (index . 1)}}
+      <label class="field-label">{{index . 0}}</label>
+      <div class="field-value">
+        <input value="{{index . 1}}">
+      </div>
+    {{end}}
+  </div>
+{{end}}
+
+{{define "numberField"}}
+  {{template "inputField" pair "number-field" .}}
+{{end}}
+
+{{define "textField"}}
+  {{template "inputField" pair "text-field" .}}
+{{end}}
+
+{{define "checkField"}}
+  <div class="check-field">
     <label class="field-label">{{index . 0}}</label>
     <div class="field-value">
-      <input value="{{index . 1}}">
+      <input type="checkbox" {{if (index . 1)}} checked {{end}}>
     </div>
   </div>
 {{end}}

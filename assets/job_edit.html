@@ -14,9 +14,9 @@
     {{template "navHeader" "jobs"}}
     <input type="hidden" id="job-id" value="{{.ID}}">
     <div class="list">
-      <div class="pane job-settings-pane">
+      <div class="pane">
         <input id="job-name" placeholder="Name" value="{{.Name}}">
-        <div id="job-actions">
+        <div class="pane-buttons">
           <button class="save-button">Save</button>
           {{if not (eq .ID "")}}
             <button class="delete-button">Delete</button>
@@ -24,12 +24,70 @@
         </div>
       </div>
 
-      <div class="pane job-settings-pane">
-        {{template "inputField" pair "Max Instances" .MaxInstances}}
-        {{template "inputField" pair "Priority" .Priority}}
-        {{template "inputField" pair "CPUs" .NumCPU}}
+      <div class="pane">
+        {{template "numberField" pair "Max Instances" .MaxInstances}}
+        {{template "numberField" pair "Priority" .Priority}}
+        {{template "numberField" pair "CPUs" .NumCPU}}
+      </div>
+
+      <div id="task-templates">
+        {{template "taskFileTransfer"}}
+        {{template "taskGoRun"}}
+        {{template "taskExit"}}
       </div>
     </div>
   </body>
 </html>
+{{end}}
+
+{{define "taskControls"}}
+<div class="task-controls">
+  <button class="task-delete">Delete</button>
+  <button class="task-moveup">Move Up</button>
+  <button class="task-movedown">Move Down</button>
+</div>
+{{end}}
+
+{{define "taskFileTransfer"}}
+<div class="task pane task-filetransfer">
+  {{template "taskControls"}}
+  {{template "messageField" "File Transfer"}}
+  {{if .}}
+    {{template "checkField" pair "To slave" .ToSlave}}
+    {{template "textField" pair "Master path" .MasterPath}}
+    {{template "textField" pair "Slave path" .SlavePath}}
+  {{else}}
+    {{template "checkField" pair "To slave" false}}
+    {{template "textField" pair "Master path" ""}}
+    {{template "textField" pair "Slave path" ""}}
+  {{end}}
+</div>
+{{end}}
+
+{{define "taskGoRun"}}
+<div class="task pane task-gorun">
+  {{template "taskControls"}}
+  {{template "messageField" "Go Run"}}
+  {{if .}}
+    {{template "textField" pair "Source dir" .GoSourceDir}}
+  {{else}}
+    {{template "textField" pair "Source dir" ""}}
+  {{end}}
+  <div class="pane-buttons" data-center="true">
+    <button class="delete-button">- Arg</button>
+    <button class="add-button">+ Arg</button>
+  </div>
+  {{if .}}
+    {{range .Arguments}}
+      {{template "textField" pair "Argument" .}}
+    {{end}}
+  {{end}}
+</div>
+{{end}}
+
+{{define "taskExit"}}
+<div class="task pane task-gorun">
+  {{template "taskControls"}}
+  {{template "messageField" "Exit"}}
+</div>
 {{end}}

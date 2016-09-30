@@ -1,4 +1,5 @@
 @input-height: 30px;
+@field-separation: 3px;
 
 input {
   border: 1px solid @theme-color;
@@ -6,6 +7,10 @@ input {
   font-size: 18px;
   box-sizing: border-box;
   padding: 0 5px;
+}
+
+input[type="checkbox"] {
+  height: auto;
 }
 
 input:focus {
@@ -29,6 +34,8 @@ input:focus {
     float: none;
     text-align: center;
     width: 100%;
+    display: inline-block;
+    font-style: italic;
   }
 }
 
@@ -36,24 +43,47 @@ input:focus {
   .field(28px);
 }
 
-.input-field {
+.input-field(@input-width: auto) {
   .field(30px);
   margin: 10px 0;
 
   input {
-    width: 120px;
+    width: @input-width;
   }
 }
 
+.number-field {
+  .input-field(120px);
+}
+
+.text-field {
+  .input-field(200px);
+}
+
+.check-field {
+  .input-field();
+
+  .field-value {
+    line-height: 30px;
+    height: 100%;
+  }
+}
+
+.field-half-width {
+  width: calc(~"50% - "@field-separation);
+}
+
 .field-label {
-  width: ~"calc(50% - 3px)";
+  .field-half-width;
+
   float: left;
   text-align: right;
   font-weight: bold;
 }
 
 .field-value {
-  width: ~"calc(50% - 3px)";
+  .field-half-width;
+
   float: right;
   text-align: left;
 }
