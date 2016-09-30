@@ -1,20 +1,20 @@
 {{define "htmlHeader"}}
-    <meta charset="utf-8">
-    <meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 {{end}}
 
 {{define "navHeader"}}
-    <nav id="header">
-      {{if eq . "jobs"}}
-      <a class="header-item header-item-cur" href="/jobs">Jobs</a>
-      {{else}}
-      <a class="header-item" href="/jobs">Jobs</a>
-      {{end}}
-      {{if eq . "slaves"}}
-      <a class="header-item header-item-cur" href="/slaves">Slaves</a>
-      {{else}}
-      <a class="header-item" href="/slaves">Slaves</a>
-      {{end}}
-    </nav>
+  <nav id="header">
+    {{if eq . "jobs"}}
+    <a class="header-item header-item-cur" href="/jobs">Jobs</a>
+    {{else}}
+    <a class="header-item" href="/jobs">Jobs</a>
+    {{end}}
+    {{if eq . "slaves"}}
+    <a class="header-item header-item-cur" href="/slaves">Slaves</a>
+    {{else}}
+    <a class="header-item" href="/slaves">Slaves</a>
+    {{end}}
+  </nav>
 {{end}}

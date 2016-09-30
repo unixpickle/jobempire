@@ -42,9 +42,9 @@
 {{end}}
 
 {{define "slaveRunningClass"}}
-{{- if .Master.Running -}}
-slave-pane-running
-{{- else -}}
-slave-pane-not-running
-{{- end -}}
+  {{- if .Master.Running -}}
+    slave-pane-running
+  {{- else -}}
+    slave-pane-not-running
+  {{- end -}}
 {{end}}

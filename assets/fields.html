@@ -1,21 +1,21 @@
 {{define "messageField"}}
-          <div class="message-field">
-            <label class="field-value">{{.}}</label>
-          </div>
+  <div class="message-field">
+    <label class="field-value">{{.}}</label>
+  </div>
 {{end}}
 
 {{define "labelField"}}
-          <div class="label-field">
-            <label class="field-label">{{index . 0}}</label>
-            <label class="field-value">{{index . 1}}</label>
-          </div>
+  <div class="label-field">
+    <label class="field-label">{{index . 0}}</label>
+    <label class="field-value">{{index . 1}}</label>
+  </div>
 {{end}}
 
 {{define "inputField"}}
-        <div class="input-field">
-          <label class="field-label">{{index . 0}}</label>
-          <div class="field-value">
-            <input value="{{index . 1}}">
-          </div>
-        </div>
+  <div class="input-field">
+    <label class="field-label">{{index . 0}}</label>
+    <div class="field-value">
+      <input value="{{index . 1}}">
+    </div>
+  </div>
 {{end}}

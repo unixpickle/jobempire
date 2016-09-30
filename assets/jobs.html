@@ -13,17 +13,17 @@
     {{template "navHeader" "jobs"}}
     {{if $jobs := .Jobs}}
       <div id="job-list" class="pane-grid">
-      {{range $jobs}}
-        <div class="item-pane item-pane-clickable job-pane"
-             onclick="location='/editjob?id={{.ID}}'">
-          <input type="hidden" class="job-id" value="{{.ID}}">
-          {{template "labelField" pair "Name" .Name}}
-          {{template "labelField" pair "Tasks" (len .Tasks)}}
-          {{template "labelField" pair "Max Inst." .MaxInstances}}
-          {{template "labelField" pair "Priority" .Priority}}
-          {{template "labelField" pair "NumCPU" .NumCPU}}
-        </div>
-      {{end}}
+        {{range $jobs}}
+          <div class="item-pane item-pane-clickable job-pane"
+               onclick="location='/editjob?id={{.ID}}'">
+            <input type="hidden" class="job-id" value="{{.ID}}">
+            {{template "labelField" pair "Name" .Name}}
+            {{template "labelField" pair "Tasks" (len .Tasks)}}
+            {{template "labelField" pair "Max Inst." .MaxInstances}}
+            {{template "labelField" pair "Priority" .Priority}}
+            {{template "labelField" pair "NumCPU" .NumCPU}}
+          </div>
+        {{end}}
       </div>
     {{else}}
       <div id="no-jobs" class="item-pane empty-list-pane">No Jobs</div>
