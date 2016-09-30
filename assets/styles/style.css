@@ -58,21 +58,22 @@ button:hover {
 #header a.cur-page:hover {
   color: #777;
 }
-.item-pane {
+.pane {
   background-color: rgba(255, 255, 255, 0.7);
 }
-.item-pane-clickable {
+.pane[data-clickable="true"] {
   -webkit-transition: background-color 0.5s ease;
   transition: background-color 0.5s ease;
   cursor: pointer;
 }
-.item-pane-clickable:hover {
+.pane[data-clickable="true"]:hover {
   background-color: rgba(255, 255, 255, 0.9);
 }
-.item-pane-clickable > * {
+.pane[data-clickable="true"] > * {
   pointer-events: none;
 }
-.empty-list-pane {
+.empty-pane {
+  background-color: rgba(255, 255, 255, 0.7);
   position: absolute;
   top: calc(50% - 100px);
   left: calc(50% - 150px);
@@ -84,18 +85,41 @@ button:hover {
   font-weight: 300px;
   font-size: 30px;
 }
-.pane-grid {
+.grid {
   position: absolute;
   top: calc(54px);
   left: 10px;
   width: calc(100% - 20px);
   text-align: center;
 }
-.pane-grid .item-pane {
+.grid .pane {
   display: inline-block;
+  box-sizing: border-box;
+  width: 280px;
   margin: 10px;
   padding: 15px;
+}
+.list {
+  position: absolute;
+  top: 54px;
+}
+.list .pane {
   box-sizing: border-box;
+  width: 100%;
+  margin: 0 0 10px 0;
+  padding: 10px;
+}
+@media (min-width: 600px) {
+  .list {
+    width: 600px;
+    left: calc(50% -  300px);
+  }
+}
+@media (max-width: 600px) {
+  .list {
+    width: calc(100% - 20px);
+    left: 10px;
+  }
 }
 input {
   border: 1px solid #65bcd4;
@@ -103,6 +127,9 @@ input {
   font-size: 18px;
   box-sizing: border-box;
   padding: 0 5px;
+}
+input:focus {
+  outline: 0;
 }
 .message-field {
   width: 100%;
@@ -148,9 +175,6 @@ input {
   float: right;
   text-align: left;
 }
-.job-pane {
-  width: 280px;
-}
 #add-job-button {
   position: fixed;
   right: 10px;
@@ -167,30 +191,6 @@ input {
   overflow: hidden;
   line-height: 1 !important;
   cursor: pointer;
-}
-#job-settings {
-  position: absolute;
-  top: 54px;
-}
-@media (min-width: 600px) {
-  #job-settings {
-    width: 600px;
-    left: calc(50% -  290px);
-  }
-}
-@media (max-width: 600px) {
-  #job-settings {
-    width: calc(100% - 20px);
-    left: 10px;
-  }
-}
-.job-settings-pane {
-  width: 100%;
-  padding: 10px;
-  box-sizing: border-box;
-}
-.job-settings-pane {
-  margin-top: 10px;
 }
 #job-name {
   border: 1px solid #65bcd4;
@@ -216,16 +216,13 @@ input {
   margin-left: 10px;
   width: 90px;
 }
-.slave-pane {
-  width: 280px;
-}
 #login {
+  background-color: rgba(255, 255, 255, 0.7);
   position: absolute;
   top: calc(50% - 100px);
   left: calc(50% - 150px);
   width: 300px;
   height: 200px;
-  background-color: rgba(255, 255, 255, 0.7);
 }
 #login input {
   position: absolute;
@@ -233,9 +230,6 @@ input {
   left: calc(50% - 100px);
   width: 200px;
   text-align: center;
-}
-#login input:focus {
-  outline: 0;
 }
 #login label {
   display: block;

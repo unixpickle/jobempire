@@ -12,10 +12,9 @@
   </head>
   <body>
     {{template "navHeader" "jobs"}}
-    <div id="job-settings">
-      <input type="hidden" id="job-id" value="{{.ID}}">
-
-      <div class="item-pane job-settings-pane">
+    <input type="hidden" id="job-id" value="{{.ID}}">
+    <div class="list">
+      <div class="pane job-settings-pane">
         <input id="job-name" placeholder="Name" value="{{.Name}}">
         <div id="job-actions">
           <button class="save-button">Save</button>
@@ -25,7 +24,7 @@
         </div>
       </div>
 
-      <div class="item-pane job-settings-pane">
+      <div class="pane job-settings-pane">
         {{template "inputField" pair "Max Instances" .MaxInstances}}
         {{template "inputField" pair "Priority" .Priority}}
         {{template "inputField" pair "CPUs" .NumCPU}}

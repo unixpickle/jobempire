@@ -12,9 +12,9 @@
   <body>
     {{template "navHeader" "slaves"}}
     {{if $masters := masters .}}
-      <div id="slave-list" class="pane-grid">
+      <div class="grid">
       {{range reverse $masters}}
-        <div class="item-pane slave-pane {{template "slaveRunningClass" .}}">
+        <div class="pane {{template "slaveRunningClass" .}}">
           {{with .Master.SlaveInfo}}
             {{template "labelField" pair "CPUs" .NumCPU}}
             {{template "labelField" pair "Max Procs" .MaxProcs}}
@@ -35,7 +35,7 @@
       {{end}}
       </div>
     {{else}}
-      <div id="no-slaves" class="item-pane empty-list-pane">No Slaves</div>
+      <div id="no-slaves" class="empty-pane">No Slaves</div>
     {{end}}
   </body>
 </html>

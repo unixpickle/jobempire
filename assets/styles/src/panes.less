@@ -1,22 +1,26 @@
-.item-pane {
+@list-width: 600px;
+
+.pane {
   background-color: rgba(255, 255, 255, 0.7);
 }
 
-.item-pane-clickable {
+.pane[data-clickable="true"] {
   -webkit-transition: background-color 0.5s ease;
   transition: background-color 0.5s ease;
   cursor: pointer;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+  }
+
+  > * {
+    pointer-events: none;
+  }
 }
 
-.item-pane-clickable:hover {
-  background-color: rgba(255, 255, 255, 0.9);
-}
+.empty-pane {
+  .pane;
 
-.item-pane-clickable > * {
-  pointer-events: none;
-}
-
-.empty-list-pane {
   position: absolute;
   top: ~"calc(50% - 100px)";
   left: ~"calc(50% - 150px)";
@@ -29,17 +33,44 @@
   font-size: 30px;
 }
 
-.pane-grid {
+.grid {
   position: absolute;
   top: calc(@header-size + 10px);
   left: 10px;
   width: ~"calc(100% - 20px)";
   text-align: center;
+
+  .pane {
+    display: inline-block;
+    box-sizing: border-box;
+    width: 280px;
+    margin: 10px;
+    padding: 15px;
+  }
 }
 
-.pane-grid .item-pane {
-  display: inline-block;
-  margin: 10px;
-  padding: 15px;
-  box-sizing: border-box;
+.list {
+  position: absolute;
+  top: (@header-size + 10px);
+
+  .pane {
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0 0 10px 0;
+    padding: 10px;
+  }
+}
+
+@media (min-width: @list-width) {
+  .list {
+    width: @list-width;
+    left: calc(~"50% - "(@list-width / 2));
+  }
+}
+
+@media (max-width: @list-width) {
+  .list {
+    width: ~"calc(100% - 20px)";
+    left: 10px;
+  }
 }

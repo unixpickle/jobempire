@@ -12,9 +12,9 @@
   <body>
     {{template "navHeader" "jobs"}}
     {{if $jobs := .Jobs}}
-      <div id="job-list" class="pane-grid">
+      <div class="grid">
         {{range $jobs}}
-          <div class="item-pane item-pane-clickable job-pane"
+          <div class="pane" data-clickable="true"
                onclick="location='/editjob?id={{.ID}}'">
             <input type="hidden" class="job-id" value="{{.ID}}">
             {{template "labelField" pair "Name" .Name}}
@@ -28,7 +28,7 @@
     {{else}}
       <div id="no-jobs" class="item-pane empty-list-pane">No Jobs</div>
     {{end}}
-    <a class="item-pane item-pane-clickable" href="/addjob"
+    <a class="pane" data-clickable="true" href="/addjob"
        id="add-job-button">Add Job</a>
   </body>
 </html>
