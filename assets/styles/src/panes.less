@@ -1,0 +1,67 @@
+.item-pane {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.item-pane-clickable {
+  -webkit-transition: background-color 0.5s ease;
+  transition: background-color 0.5s ease;
+  cursor: pointer;
+}
+
+.item-pane-clickable:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.item-pane-clickable > * {
+  pointer-events: none;
+}
+
+.empty-list-pane {
+  position: absolute;
+  top: ~"calc(50% - 100px)";
+  left: ~"calc(50% - 150px)";
+  width: 300px;
+  height: 200px;
+  line-height: 200px;
+  text-align: center;
+  color: #65bcd4;
+  font-weight: 300px;
+  font-size: 30px;
+}
+
+.pane-grid {
+  position: absolute;
+  top: 50px;
+  left: 10px;
+  width: ~"calc(100% - 20px)";
+  text-align: center;
+}
+
+.pane-grid .item-pane {
+  display: inline-block;
+  margin: 10px;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+.item-pane-field {
+  width: 100%;
+  height: 28px;
+}
+
+.item-pane-field label {
+  line-height: 28px;
+  height: 28px;
+  width: ~"calc(50% - 3px)";
+}
+
+.item-pane-field-label {
+  float: left;
+  text-align: right;
+  font-weight: bold;
+}
+
+.item-pane-field-value {
+  float: right;
+  text-align: left;
+}

@@ -1,0 +1,53 @@
+#job-settings {
+  position: absolute;
+  top: 54px;
+}
+
+@media (min-width: 600px) {
+  #job-settings {
+    width: 580px;
+    left: ~"calc(50% - 290px)";
+  }
+}
+
+@media (max-width: 600px) {
+  #job-settings {
+    width: ~"calc(100% - 20px)";
+    left: 10px;
+  }
+}
+
+.job-settings-pane {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+#job-name {
+  border: 1px solid #65bcd4;
+  width: 100%;
+  height: 30px;
+  font-size: 18px;
+  box-sizing: border-box;
+  padding: 0 5px;
+}
+
+#job-name:focus {
+  outline: 0;
+}
+
+#job-actions {
+  margin-top: 10px;
+}
+
+#job-actions::after {
+  content: ' ';
+  display: block;
+  clear: both;
+}
+
+#job-actions > button {
+  float: right;
+  margin-left: 10px;
+  width: 90px;
+}

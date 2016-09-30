@@ -1,0 +1,3 @@
+#!/bin/bash
+go-bindata assets/...
+lessc assets/styles/src/index.less assets/styles/style.css
