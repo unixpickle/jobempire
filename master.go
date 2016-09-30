@@ -13,6 +13,7 @@ import (
 	"os/signal"
 	"reflect"
 	"strconv"
+	"strings"
 	"syscall"
 
 	"github.com/unixpickle/jobempire/jobadmin"
@@ -100,8 +101,12 @@ func readJobs(file string) ([]*jobadmin.Job, error) {
 }
 
 func parseTemplates() *template.Template {
-	files := []string{"assets/header.html", "assets/jobs.html", "assets/login.html",
-		"assets/slaves.html", "assets/util.html"}
+	files := []string{}
+	for _, n := range AssetNames() {
+		if strings.HasSuffix(n, ".html") {
+			files = append(files, n)
+		}
+	}
 	var body bytes.Buffer
 	for _, f := range files {
 		data, err := Asset(f)

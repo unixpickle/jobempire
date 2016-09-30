@@ -5,6 +5,34 @@ html, body {
   font-size: 16px;
 }
 
+button {
+  border: none;
+  box-sizing: border-box;
+  padding: 0 20px;
+  margin: 0;
+  height: 28px;
+  line-height: 28px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #aaa;
+  color: white;
+}
+
+button:focus {
+  outline: 0;
+}
+
+button:hover {
+  background-color: #888;
+}
+
+.delete-button {
+  background-color: #d4718f;
+}
+
+.delete-button:hover {
+  background-color: #a95972;
+}
 
 #header {
   position: fixed;
@@ -95,6 +123,7 @@ html, body {
   text-align: left;
 }
 
+
 .slave-pane {
   width: 280px;
 }
@@ -105,4 +134,90 @@ html, body {
   line-height: 28px;
   margin-top: 5px;
   font-style: italic;
+}
+
+
+#add-job-button {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  width: 40px;
+  height: 40px;
+
+  background-color: rgba(255, 255, 255, 0.7);
+  background-image: url('../images/plus.svg');
+  background-size: 20px 20px;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  border: none;
+  border-radius: 20px;
+
+  color: transparent;
+  overflow: hidden;
+  line-height: 1 !important;
+  cursor: pointer;
+}
+
+#add-job-button:focus {
+  outline: 0;
+}
+
+#add-job-button:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+
+#job-settings {
+  position: absolute;
+  top: 54px;
+}
+
+@media (min-width: 600px) {
+  #job-settings {
+    width: 580px;
+    left: calc(50% - 290px);
+  }
+}
+
+@media (max-width: 600px) {
+  #job-settings {
+    width: calc(100% - 20px);
+    left: 10px;
+  }
+}
+
+.job-settings-pane {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+#job-name {
+  border: 1px solid #65bcd4;
+  width: 100%;
+  height: 30px;
+  font-size: 18px;
+  box-sizing: border-box;
+  padding: 0 5px;
+}
+
+#job-name:focus {
+  outline: 0;
+}
+
+#job-actions {
+  margin-top: 10px;
+}
+
+#job-actions::after {
+  content: ' ';
+  display: block;
+  clear: both;
+}
+
+#job-actions > button {
+  float: right;
+  margin-left: 10px;
+  width: 90px;
 }
