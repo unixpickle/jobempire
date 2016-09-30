@@ -6,15 +6,7 @@
 
 {{define "navHeader"}}
   <nav id="header">
-    {{if eq . "jobs"}}
-    <a class="header-item header-item-cur" href="/jobs">Jobs</a>
-    {{else}}
-    <a class="header-item" href="/jobs">Jobs</a>
-    {{end}}
-    {{if eq . "slaves"}}
-    <a class="header-item header-item-cur" href="/slaves">Slaves</a>
-    {{else}}
-    <a class="header-item" href="/slaves">Slaves</a>
-    {{end}}
+    <a {{if eq . "jobs"}} class="cur-page" {{end}} href="/jobs">Jobs</a>
+    <a {{if eq . "slaves"}} class="cur-page" {{end}} href="/slaves">Slaves</a>
   </nav>
 {{end}}

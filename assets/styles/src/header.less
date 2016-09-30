@@ -9,27 +9,27 @@
   line-height: @header-size;
   background-color: white;
   text-align: center;
-}
 
-.header-item {
-  display: inline-block;
-  height: @header-size;
-  box-sizing: border-box;
-  line-height: @header-size;
-  margin: 0;
-  padding: 0 10px;
-  text-decoration: none;
-  color: #777;
-}
+  a {
+    display: inline-block;
+    height: @header-size;
+    box-sizing: border-box;
+    line-height: @header-size;
+    margin: 0;
+    padding: 0 10px;
+    text-decoration: none;
+    color: #777;
+  }
 
-.header-item:hover {
-  color: #999;
-}
+  a:hover {
+    color: #999;
+  }
 
-.header-item-cur {
-  border-bottom: 4px solid @theme-color;
-}
+  a.cur-page {
+    border-bottom: 4px solid @theme-color;
+  }
 
-.header-item-cur:hover {
-  color: #777;
+  a.cur-page:hover {
+    color: #777;
+  }
 }
