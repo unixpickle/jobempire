@@ -15,7 +15,7 @@
     <div id="job-settings">
       <input type="hidden" id="job-id" value="{{.ID}}">
       <div class="item-pane job-settings-pane">
-        <input id="job-name" placeholder="Name">
+        <input id="job-name" placeholder="Name" value="{{.Name}}">
         <div id="job-actions">
           <button class="save-button">Save</button>
           {{if not (eq .ID "")}}
