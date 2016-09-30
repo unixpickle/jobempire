@@ -75,11 +75,11 @@ button:hover {
 .empty-pane {
   background-color: rgba(255, 255, 255, 0.7);
   position: absolute;
-  top: calc(50% - 100px);
-  left: calc(50% - 150px);
-  width: 300px;
-  height: 200px;
-  line-height: 200px;
+  top: 56px;
+  left: calc(50% -  140px);
+  width: 280px;
+  height: 173px;
+  line-height: 173px;
   text-align: center;
   color: #65bcd4;
   font-weight: 300px;
@@ -87,38 +87,41 @@ button:hover {
 }
 .grid {
   position: absolute;
-  top: calc(54px);
+  top: 56px;
   left: 10px;
   width: calc(100% - 20px);
   text-align: center;
+  /* Fix the annoying space between floating elements. */
+  font-size: 0;
 }
 .grid .pane {
+  font-size: 16px;
   display: inline-block;
   box-sizing: border-box;
   width: 280px;
-  margin: 10px;
+  margin: 0 6px 12px 6px;
   padding: 15px;
 }
 .list {
   position: absolute;
-  top: 54px;
+  top: 56px;
 }
 .list .pane {
   box-sizing: border-box;
   width: 100%;
-  margin: 0 0 10px 0;
+  margin: 0 0 12px 0;
   padding: 10px;
 }
-@media (min-width: 600px) {
+@media (min-width: 624px) {
   .list {
     width: 600px;
     left: calc(50% -  300px);
   }
 }
-@media (max-width: 600px) {
+@media (max-width: 624px) {
   .list {
-    width: calc(100% - 20px);
-    left: 10px;
+    width: calc(100% -  24px);
+    left: 12px;
   }
 }
 input {
@@ -219,10 +222,10 @@ input:focus {
 #login {
   background-color: rgba(255, 255, 255, 0.7);
   position: absolute;
-  top: calc(50% - 100px);
-  left: calc(50% - 150px);
-  width: 300px;
-  height: 200px;
+  top: calc(50% -  86.5px);
+  left: calc(50% - 140px);
+  width: 280px;
+  height: 173px;
 }
 #login input {
   position: absolute;

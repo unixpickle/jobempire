@@ -1,4 +1,8 @@
 @list-width: 600px;
+@pane-spacing: 12px;
+
+@grid-pane-width: 280px;
+@golden-pane-height: round(@grid-pane-width / 1.618);
 
 .pane {
   background-color: rgba(255, 255, 255, 0.7);
@@ -22,11 +26,11 @@
   .pane;
 
   position: absolute;
-  top: ~"calc(50% - 100px)";
-  left: ~"calc(50% - 150px)";
-  width: 300px;
-  height: 200px;
-  line-height: 200px;
+  top: (@header-size + @pane-spacing);
+  left: calc(~"50% - "(@grid-pane-width / 2));
+  width: @grid-pane-width;
+  height: @golden-pane-height;
+  line-height: @golden-pane-height;
   text-align: center;
   color: @theme-color;
   font-weight: 300px;
@@ -35,42 +39,46 @@
 
 .grid {
   position: absolute;
-  top: calc(@header-size + 10px);
+  top: (@header-size + @pane-spacing);
   left: 10px;
   width: ~"calc(100% - 20px)";
   text-align: center;
 
+  /* Fix the annoying space between floating elements. */
+  font-size: 0;
+
   .pane {
+    font-size: @font-size;
     display: inline-block;
     box-sizing: border-box;
-    width: 280px;
-    margin: 10px;
+    width: @grid-pane-width;
+    margin: 0 (@pane-spacing/2) @pane-spacing (@pane-spacing/2);
     padding: 15px;
   }
 }
 
 .list {
   position: absolute;
-  top: (@header-size + 10px);
+  top: (@header-size + @pane-spacing);
 
   .pane {
     box-sizing: border-box;
     width: 100%;
-    margin: 0 0 10px 0;
+    margin: 0 0 @pane-spacing 0;
     padding: 10px;
   }
 }
 
-@media (min-width: @list-width) {
+@media (min-width: (@list-width+(@pane-spacing*2))) {
   .list {
     width: @list-width;
     left: calc(~"50% - "(@list-width / 2));
   }
 }
 
-@media (max-width: @list-width) {
+@media (max-width: (@list-width+(@pane-spacing*2))) {
   .list {
-    width: ~"calc(100% - 20px)";
-    left: 10px;
+    width: calc(~"100% - "(@pane-spacing*2));
+    left: @pane-spacing;
   }
 }

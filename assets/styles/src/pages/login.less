@@ -1,11 +1,14 @@
 #login {
   .pane;
 
+  @width: @grid-pane-width;
+  @height: @golden-pane-height;
+
   position: absolute;
-  top: ~"calc(50% - 100px)";
-  left: ~"calc(50% - 150px)";
-  width: 300px;
-  height: 200px;
+  top: calc(~"50% - "(@height / 2));
+  left: calc(~"50% -"(@width / 2));
+  width: @width;
+  height: @height;
 
   input {
     position: absolute;
