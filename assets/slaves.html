@@ -8,7 +8,8 @@
     {{template "navHeader" "slaves"}}
     {{if $masters := masters .}}
       <div class="grid">
-      {{range $i, $m := reverse $masters}}
+      {{range $revI, $m := reverse $masters}}
+        {{$i := reverseIndex $revI (len $masters)}}
         <div class="pane {{template "slaveRunningClass" .}}"
              data-clickable="true" onclick="location='/slave?id={{$i}}'">
           {{template "slaveInfoFields" $m}}
