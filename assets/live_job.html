@@ -1,0 +1,24 @@
+{{define "liveJob"}}
+<!doctype html>
+<html>
+  <head>
+    {{template "htmlHeader" "Live Job"}}
+  </head>
+  <body>
+    {{template "navHeader" "slaves"}}
+
+    <div class="list">
+      <div class="pane" id="scheduling-prefs">
+        {{template "liveJobFields" .}}
+      </div>
+    </div>
+  </body>
+</html>
+{{end}}
+
+{{define "liveJobFields"}}
+  {{template "labelField" pair "Name" .Job.Name}}
+  {{template "labelField" pair "Running" .Running}}
+  {{template "labelField" pair "Run tasks" .TaskCount}}
+  {{template "labelField" pair "Total tasks" (len .Job.Tasks)}}
+{{end}}

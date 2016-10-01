@@ -15,11 +15,20 @@
         <div class="pane">
           {{template "messageField" "Automatic scheduling"}}
           <div class="pane-buttons" data-center="true">
-            <button onclick="location='/setauto?auto={{not .Auto}}&id={{.ID}}'"
+            <button onclick="location='/setauto?auto={{not .Auto}}&amp;id={{.ID}}'"
                     id="toggle-auto">
               {{- if .Auto -}} Disable {{- else -}} Enable {{- end -}}
             </button>
           </div>
+        </div>
+      {{end}}
+      {{$slaveID := .ID}}
+      {{$jobCount := .Master.JobCount}}
+      {{range $revI, $job := reverse (.Master.Jobs 0 $jobCount)}}
+        {{$i := reverseIndex $revI $jobCount}}
+        <div class="pane" data-clickable="true"
+             onclick="location='/job?slave={{$slaveID}}&amp;idx={{$i}}'">
+          {{template "liveJobFields" $job}}
         </div>
       {{end}}
     </div>

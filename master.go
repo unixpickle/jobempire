@@ -117,10 +117,11 @@ func parseTemplates() *template.Template {
 	}
 	res := template.New("master")
 	res.Funcs(template.FuncMap{
-		"masters":  templateMasters,
-		"pair":     templatePair,
-		"reverse":  templateReverse,
-		"jsonPass": templateJSONPass,
+		"masters":      templateMasters,
+		"pair":         templatePair,
+		"reverse":      templateReverse,
+		"jsonPass":     templateJSONPass,
+		"reverseIndex": templateReverseIndex,
 	})
 	return template.Must(res.Parse(body.String()))
 }
@@ -173,4 +174,8 @@ func templateJSONPass(x interface{}) (map[string]interface{}, error) {
 	var res map[string]interface{}
 	err = json.Unmarshal(data, &res)
 	return res, err
+}
+
+func templateReverseIndex(i, count int) int {
+	return count - (i + 1)
 }
