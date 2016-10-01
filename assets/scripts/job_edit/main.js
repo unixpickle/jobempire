@@ -12,6 +12,11 @@
       NumCPU: parseNumValue(scheduling[2], 'CPUs'),
     };
 
+    if (jobJSON.Priority > 0 && jobJSON.NumCPU === 0 &&
+        jobJSON.MaxInstances === 0) {
+      throw "job's scheduling is unbounded";
+    }
+
     var form = document.createElement('form');
     var input = document.createElement('input');
     input.value = JSON.stringify(jobJSON);

@@ -170,10 +170,13 @@ func (s *Scheduler) Jobs() ([]*Job, error) {
 // SetJobs sets the scheduler's job pool.
 //
 // This fails if the scheduler has been terminated or if
-// any of the jobs cannot be copied.
+// any of the jobs is invalid in some way.
 func (s *Scheduler) SetJobs(j []*Job) error {
 	jobsCopy := make([]*Job, len(j))
 	for i, x := range j {
+		if x.Unbounded() {
+			return fmt.Errorf("job %d is unbounded", i)
+		}
 		c, err := x.Copy()
 		if err != nil {
 			return fmt.Errorf("copy job %d: %s", i, err)

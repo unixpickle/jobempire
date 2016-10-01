@@ -63,3 +63,9 @@ func (j *Job) Copy() (*Job, error) {
 	}
 	return &res, nil
 }
+
+// Unbounded returns true if the job will be scheduled
+// an infinite number of times and cause problems.
+func (j *Job) Unbounded() bool {
+	return j.NumCPU == 0 && j.Priority > 0 && j.MaxInstances == 0
+}
