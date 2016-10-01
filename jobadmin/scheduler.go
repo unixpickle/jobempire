@@ -13,10 +13,8 @@ const jobDoneWait = time.Second
 var errSchedulerShutdown = errors.New("scheduler is shutdown")
 
 type schedJob struct {
-	Job    *Job
 	Master *LiveMaster
-	Res    chan<- *LiveJob
-	Err    chan<- error
+	Job    *Job
 }
 
 type schedMasterReq struct {
@@ -154,6 +152,23 @@ func (s *Scheduler) WaitMasters(n int, cancel <-chan struct{}) bool {
 // cancel the wait if it is closed.
 func (s *Scheduler) Wait(cancel <-chan struct{}) {
 	s.masterNote.WaitClose(nil)
+}
+
+// Launch launches the given job on the given master.
+//
+// This fails if the scheduler has been terminated or
+// if the job cannot be copied.
+func (s *Scheduler) Launch(m *LiveMaster, j *Job) error {
+	c, err := j.Copy()
+	if err != nil {
+		return err
+	}
+	select {
+	case s.runJob <- &schedJob{m, c}:
+		return nil
+	case <-s.shutdown:
+		return errSchedulerShutdown
+	}
 }
 
 // Jobs returns a read-only copy of the current jobs in

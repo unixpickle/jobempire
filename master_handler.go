@@ -83,6 +83,8 @@ func (m *MasterHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		m.ServeShutdownSlave(w, r)
 	case "/stopjob":
 		m.ServeStopJob(w, r)
+	case "/launch":
+		m.ServeLaunch(w, r)
 	default:
 		m.serveNotFound(w, r)
 	}
@@ -136,10 +138,16 @@ func (m *MasterHandler) ServeSlavePage(w http.ResponseWriter, r *http.Request) {
 		m.serveError(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	allJobs, err := m.Scheduler.Jobs()
+	if err != nil {
+		m.serveError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	pageObj := map[string]interface{}{
-		"Master": master,
-		"Auto":   auto,
-		"ID":     r.FormValue("id"),
+		"Master":  master,
+		"Auto":    auto,
+		"ID":      r.FormValue("id"),
+		"AllJobs": allJobs,
 	}
 	m.serveTemplate(w, "slave", pageObj)
 }
@@ -241,6 +249,31 @@ func (m *MasterHandler) ServeStopJob(w http.ResponseWriter, r *http.Request) {
 	job.Cancel()
 	http.Redirect(w, r, "/job?slave="+r.FormValue("slave")+"&idx="+r.FormValue("idx"),
 		http.StatusSeeOther)
+}
+
+func (m *MasterHandler) ServeLaunch(w http.ResponseWriter, r *http.Request) {
+	slave, _, err := m.slaveForID(r.FormValue("slave"))
+	if err != nil {
+		m.serveError(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	jobs, err := m.Scheduler.Jobs()
+	if err != nil {
+		m.serveError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	for _, j := range jobs {
+		if j.ID == r.FormValue("job") {
+			if err := m.Scheduler.Launch(slave, j); err != nil {
+				m.serveError(w, err.Error(), http.StatusInternalServerError)
+			} else {
+				http.Redirect(w, r, "/slave?id="+r.FormValue("slave"),
+					http.StatusSeeOther)
+			}
+			return
+		}
+	}
+	m.serveError(w, "job ID not found", http.StatusBadRequest)
 }
 
 func (m *MasterHandler) serveAsset(w http.ResponseWriter, r *http.Request, cleanPath string) {

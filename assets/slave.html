@@ -26,9 +26,31 @@
             </button>
           </div>
         </div>
+
+        <div class="pane">
+          <form action="/launch">
+            <input type="hidden" name="slave" value="{{.ID}}">
+            <div class="select-field">
+              <label class="field-label">Launch task</label>
+              <div class="field-value">
+                <select name="job">
+                  {{range .AllJobs}}
+                    <option value="{{.ID}}">{{.Name}}</option>
+                  {{end}}
+                </select>
+              </div>
+            </div>
+            <div class="pane-buttons" data-center="true">
+              <input type="submit" value="Launch">
+            </div>
+          </form>
+        </div>
       {{end}}
       {{$slaveID := .ID}}
       {{$jobCount := .Master.JobCount}}
+      {{if $jobCount}}
+      <div class="pane-gap"></div>
+      {{end}}
       {{range $revI, $job := reverse (.Master.Jobs 0 $jobCount)}}
         {{$i := reverseIndex $revI $jobCount}}
         <div class="pane" data-clickable="true"

@@ -1,9 +1,13 @@
+@button-selector: ~'button, input[type="submit"]';
+@button-focus: ~'button:focus, input[type="submit"]:focus';
+@button-hover: ~'button:hover, input[type="submit"]:hover';
+
 @button-color: #aaa;
 @button-hover-color: darken(@button-color, 20%);
 @delete-button-color: #d4718f;
 @delete-button-hover-color: darken(@delete-button-color, 20%);
 
-button {
+@{button-selector} {
   border: none;
   box-sizing: border-box;
   padding: 0 20px;
@@ -16,11 +20,11 @@ button {
   color: white;
 }
 
-button:focus {
+@{button-focus} {
   outline: 0;
 }
 
-button:hover {
+@{button-hover} {
   background-color: @button-hover-color;
 }
 

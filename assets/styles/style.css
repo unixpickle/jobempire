@@ -5,7 +5,7 @@ body {
   font-family: sans-serif;
   font-size: 16px;
 }
-button {
+button, input[type="submit"] {
   border: none;
   box-sizing: border-box;
   padding: 0 20px;
@@ -17,10 +17,10 @@ button {
   background-color: #aaa;
   color: white;
 }
-button:focus {
+button:focus, input[type="submit"]:focus {
   outline: 0;
 }
-button:hover {
+button:hover, input[type="submit"]:hover {
   background-color: #777777;
 }
 .delete-button {
@@ -139,7 +139,7 @@ button:hover {
   display: block;
   clear: both;
 }
-.pane-buttons > button {
+.pane-buttons > button, input[type="submit"] {
   float: right;
   margin-left: 10px;
   width: 100px;
@@ -148,9 +148,13 @@ button:hover {
   text-align: center;
   margin-bottom: 10px;
 }
-.pane-buttons[data-center="true"] button {
+.pane-buttons[data-center="true"] > button, input[type="submit"] {
   float: none;
   margin: 0 3px;
+}
+.pane-gap {
+  height: 10px;
+  margin: 10px 0;
 }
 input {
   border: 1px solid #65bcd4;
@@ -184,6 +188,21 @@ input:focus {
   width: 100%;
   display: inline-block;
   font-style: italic;
+}
+.select-field {
+  width: 100%;
+  height: 30px;
+}
+.select-field label {
+  line-height: 30px;
+  height: 30px;
+}
+.select-field .field-value {
+  line-height: 30px;
+}
+.select-field select {
+  margin: 0;
+  padding: 0;
 }
 .label-field {
   width: 100%;
