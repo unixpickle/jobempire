@@ -48,10 +48,9 @@
     {{end}}
   {{end}}
   {{template "fieldSeparator"}}
-  {{$dateFmt := "Jan 3 2006 15:04:05"}}
-  {{template "labelField" pair "Start time" (.StartTime.Format $dateFmt)}}
+  {{template "dateField" pair "Start Time" .StartTime}}
   {{if not .Running}}
-    {{template "labelField" pair "End time" (.EndTime.Format $dateFmt)}}
+    {{template "dateField" pair "End Time" .EndTime}}
     {{template "labelField" pair "Status" "Not running"}}
     {{if .Error}}
       {{template "labelField" pair "Error" .Error}}

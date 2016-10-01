@@ -3,6 +3,7 @@ package jobadmin
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/unixpickle/jobempire/jobproto"
 )
@@ -12,6 +13,7 @@ import (
 type LiveJob struct {
 	job       *Job
 	masterJob jobproto.MasterJob
+	startTime time.Time
 
 	tasksLock sync.RWMutex
 	tasks     []*LiveTask
@@ -19,6 +21,7 @@ type LiveJob struct {
 
 	resLock  sync.RWMutex
 	resError error
+	endTime  time.Time
 }
 
 // RunLiveJob launches a job on the Master.
@@ -29,12 +32,14 @@ func RunLiveJob(m jobproto.Master, j *Job) (*LiveJob, error) {
 		return nil, fmt.Errorf("copy Job: %s", err)
 	}
 
+	startTime := time.Now()
 	masterJob, err := m.StartJob()
 	if err != nil {
 		return nil, fmt.Errorf("start job: %s", err)
 	}
 
 	lj := &LiveJob{
+		startTime: startTime,
 		job:       jobCopy,
 		masterJob: masterJob,
 	}
@@ -112,6 +117,20 @@ func (l *LiveJob) Error() error {
 	return l.resError
 }
 
+// StartTime returns the time when the job was started.
+func (l *LiveJob) StartTime() time.Time {
+	return l.startTime
+}
+
+// EndTime returns the time when the job ended.
+// If the job has not yet finished, this is the zero value
+// of time.Time.
+func (l *LiveJob) EndTime() time.Time {
+	l.resLock.RLock()
+	defer l.resLock.RUnlock()
+	return l.endTime
+}
+
 func (l *LiveJob) runJob() {
 	for _, t := range l.job.Tasks {
 		lt, err := RunLiveTask(l.masterJob, t)
@@ -138,10 +157,13 @@ func (l *LiveJob) done(e error) {
 	} else {
 		l.masterJob.Close()
 	}
+
+	l.resLock.Lock()
+	l.endTime = time.Now()
 	if e != nil {
-		l.resLock.Lock()
 		l.resError = e
-		l.resLock.Unlock()
 	}
+	l.resLock.Unlock()
+
 	l.tasksNote.Close()
 }

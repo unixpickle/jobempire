@@ -15,6 +15,12 @@
   </div>
 {{end}}
 
+{{define "dateField"}}
+  {{$dateFmt := "Jan 3 2006 15:04:05"}}
+  {{$time := (index . 1)}}
+  {{template "labelField" pair (index . 0) ($time.Format $dateFmt)}}
+{{end}}
+
 {{define "inputField"}}
   <div class="{{index . 0}}">
     {{with (index . 1)}}

@@ -34,12 +34,12 @@
 {{define "slaveInfoFields"}}
   {{with .Master.SlaveInfo}}
     {{template "labelField" pair "CPUs" .NumCPU}}
-    {{template "labelField" pair "Max Procs" .MaxProcs}}
+    {{template "labelField" pair "Max CPUs" .MaxProcs}}
     {{template "labelField" pair "GOOS" .OS}}
     {{template "labelField" pair "GOARCH" .Arch}}
   {{end}}
 
-  {{template "labelField" pair "Total Jobs" .Master.JobCount}}
+  {{template "labelField" pair "Total jobs" .Master.JobCount}}
 
   {{if .Auto}}
     {{template "labelField" pair "Scheduling" "Auto"}}

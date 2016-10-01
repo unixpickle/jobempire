@@ -30,8 +30,14 @@
 {{end}}
 
 {{define "liveJobFields"}}
-  {{template "labelField" pair "Name" .Job.Name}}
-  {{template "labelField" pair "Running" .Running}}
+  {{template "labelField" pair "Job name" .Job.Name}}
+  {{template "dateField" pair "Start time" .StartTime}}
+  {{if .Running}}
+    {{template "labelField" pair "Status" "Running"}}
+  {{else}}
+    {{template "dateField" pair "End time" .EndTime}}
+    {{template "labelField" pair "Status" "Stopped"}}
+  {{end}}
   {{template "labelField" pair "Run tasks" .TaskCount}}
   {{template "labelField" pair "Total tasks" (len .Job.Tasks)}}
 {{end}}
