@@ -85,6 +85,13 @@ func (f *FileTransfer) runReceiver(path string, ch TaskChannel) (resErr error) {
 		return err
 	}
 
+	defer func() {
+		if resErr != nil {
+			outFile.Close()
+			os.Remove(tempPath)
+		}
+	}()
+
 	sizeObj, err := ch.Receive()
 	if err != nil {
 		return fmt.Errorf("read file size: %s", err)
@@ -95,13 +102,6 @@ func (f *FileTransfer) runReceiver(path string, ch TaskChannel) (resErr error) {
 	}
 
 	ch.Log(fmt.Sprintf("receiving file of length %d", size))
-
-	defer func() {
-		if resErr != nil {
-			outFile.Close()
-			os.Remove(tempPath)
-		}
-	}()
 
 	for {
 		obj, err := ch.Receive()
