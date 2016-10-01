@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"html/template"
 	"io"
@@ -66,10 +67,14 @@ func (m *MasterHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		m.ServeAddJobPage(w, r)
 	case "/editjob":
 		m.ServeEditJobPage(w, r)
+	case "/slave":
+		m.ServeSlavePage(w, r)
 	case "/savejob":
 		m.ServeSaveJob(w, r)
 	case "/deletejob":
 		m.ServeDeleteJob(w, r)
+	case "/setauto":
+		m.ServeSetAuto(w, r)
 	default:
 		m.serveNotFound(w, r)
 	}
@@ -117,6 +122,20 @@ func (m *MasterHandler) ServeEditJobPage(w http.ResponseWriter, r *http.Request)
 	m.serveError(w, "job ID not found: "+jobID, http.StatusBadRequest)
 }
 
+func (m *MasterHandler) ServeSlavePage(w http.ResponseWriter, r *http.Request) {
+	master, auto, err := m.slaveForID(r.FormValue("id"))
+	if err != nil {
+		m.serveError(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	pageObj := map[string]interface{}{
+		"Master": master,
+		"Auto":   auto,
+		"ID":     r.FormValue("id"),
+	}
+	m.serveTemplate(w, "slave", pageObj)
+}
+
 func (m *MasterHandler) ServeSaveJob(w http.ResponseWriter, r *http.Request) {
 	jobData := []byte(r.FormValue("job"))
 	var job jobadmin.Job
@@ -143,6 +162,22 @@ func (m *MasterHandler) ServeDeleteJob(w http.ResponseWriter, r *http.Request) {
 	} else {
 		m.serveError(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func (m *MasterHandler) ServeSetAuto(w http.ResponseWriter, r *http.Request) {
+	if r.FormValue("auto") != "true" && r.FormValue("auto") != "false" {
+		m.serveError(w, "invaild 'auto' parameter", http.StatusBadRequest)
+		return
+	}
+	master, _, err := m.slaveForID(r.FormValue("id"))
+	if err != nil {
+		m.serveError(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	auto := r.FormValue("auto") == "true"
+	m.Scheduler.SetAuto(master, auto)
+	http.Redirect(w, r, "/slave?id="+r.FormValue("id"), http.StatusSeeOther)
 }
 
 func (m *MasterHandler) serveAsset(w http.ResponseWriter, r *http.Request, cleanPath string) {
@@ -176,6 +211,21 @@ func (m *MasterHandler) serveNotFound(w http.ResponseWriter, r *http.Request) {
 
 func (m *MasterHandler) serveError(w http.ResponseWriter, msg string, code int) {
 	http.Error(w, msg, code)
+}
+
+func (m *MasterHandler) slaveForID(slaveID string) (*jobadmin.LiveMaster, bool, error) {
+	idx, err := strconv.Atoi(slaveID)
+	if err != nil || idx < 0 {
+		return nil, false, errors.New("invalid slave ID")
+	}
+	masters, auto, err := m.Scheduler.Masters()
+	if err != nil {
+		return nil, false, err
+	}
+	if idx >= len(masters) {
+		return nil, false, errors.New("slave index out of bounds")
+	}
+	return masters[idx], auto[idx], nil
 }
 
 func (m *MasterHandler) addJob(job *jobadmin.Job) error {

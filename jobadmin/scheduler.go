@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"math/rand"
 	"sync"
+	"time"
 )
+
+const jobDoneWait = time.Second
 
 var errSchedulerShutdown = errors.New("scheduler is shutdown")
 
@@ -296,7 +299,9 @@ func (s *Scheduler) availableMasters(m []*LiveMaster, auto []bool) []*LiveMaster
 
 func (s *Scheduler) startJob(j *Job, m *LiveMaster, doneChan chan<- struct{}) {
 	go func() {
+		minTime := time.After(jobDoneWait)
 		defer func() {
+			<-minTime
 			doneChan <- struct{}{}
 		}()
 		lj, err := m.RunJob(j)

@@ -1,0 +1,28 @@
+{{define "slave"}}
+<!doctype html>
+<html>
+  <head>
+    {{template "htmlHeader" "Slave"}}
+  </head>
+  <body>
+    {{template "navHeader" "slaves"}}
+
+    <div class="list">
+      <div class="pane" id="scheduling-prefs">
+        {{template "slaveInfoFields" .}}
+      </div>
+      {{if .Master.Accepting}}
+        <div class="pane">
+          {{template "messageField" "Automatic scheduling"}}
+          <div class="pane-buttons" data-center="true">
+            <button onclick="location='/setauto?auto={{not .Auto}}&id={{.ID}}'"
+                    id="toggle-auto">
+              {{- if .Auto -}} Disable {{- else -}} Enable {{- end -}}
+            </button>
+          </div>
+        </div>
+      {{end}}
+    </div>
+  </body>
+</html>
+{{end}}

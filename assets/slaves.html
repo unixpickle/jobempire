@@ -11,28 +11,7 @@
       {{range $i, $m := reverse $masters}}
         <div class="pane {{template "slaveRunningClass" .}}"
              data-clickable="true" onclick="location='/slave?id={{$i}}'">
-          {{with $m.Master.SlaveInfo}}
-            {{template "labelField" pair "CPUs" .NumCPU}}
-            {{template "labelField" pair "Max Procs" .MaxProcs}}
-            {{template "labelField" pair "GOOS" .OS}}
-            {{template "labelField" pair "GOARCH" .Arch}}
-          {{end}}
-
-          {{if $m.Auto}}
-            {{template "labelField" pair "Scheduling" "Auto"}}
-          {{else}}
-            {{template "labelField" pair "Scheduling" "Manual"}}
-          {{end}}
-
-          {{template "labelField" pair "Total Jobs" $m.Master.JobCount}}
-
-          {{if $m.Master.Accepting}}
-            {{template "messageField" "Accepting"}}
-          {{else if $m.Master.Running}}
-            {{template "messageField" "Halting"}}
-          {{else}}
-            {{template "messageField" "Stopped"}}
-          {{end}}
+          {{template "slaveInfoFields" $m}}
         </div>
       {{end}}
       </div>
@@ -49,4 +28,29 @@
   {{- else -}}
     slave-pane-not-running
   {{- end -}}
+{{end}}
+
+{{define "slaveInfoFields"}}
+  {{with .Master.SlaveInfo}}
+    {{template "labelField" pair "CPUs" .NumCPU}}
+    {{template "labelField" pair "Max Procs" .MaxProcs}}
+    {{template "labelField" pair "GOOS" .OS}}
+    {{template "labelField" pair "GOARCH" .Arch}}
+  {{end}}
+
+  {{if .Auto}}
+    {{template "labelField" pair "Scheduling" "Auto"}}
+  {{else}}
+    {{template "labelField" pair "Scheduling" "Manual"}}
+  {{end}}
+
+  {{template "labelField" pair "Total Jobs" .Master.JobCount}}
+
+  {{if .Master.Accepting}}
+    {{template "messageField" "Accepting"}}
+  {{else if .Master.Running}}
+    {{template "messageField" "Halting"}}
+  {{else}}
+    {{template "messageField" "Stopped"}}
+  {{end}}
 {{end}}
