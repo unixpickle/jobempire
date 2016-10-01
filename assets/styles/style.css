@@ -44,6 +44,7 @@ button:hover {
   line-height: 44px;
   background-color: white;
   text-align: center;
+  z-index: 1;
 }
 #header a {
   display: inline-block;
@@ -309,6 +310,9 @@ input:focus {
 }
 .task-controls .task-movedown:hover {
   background-position: bottom right;
+}
+#task-templates {
+  display: none;
 }
 #login {
   background-color: rgba(255, 255, 255, 0.7);

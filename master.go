@@ -120,6 +120,7 @@ func parseTemplates() *template.Template {
 		"masters": templateMasters,
 		"pair":    templatePair,
 		"reverse": templateReverse,
+		"json":    templateJSON,
 	})
 	return template.Must(res.Parse(body.String()))
 }
@@ -162,4 +163,9 @@ func templateReverse(x interface{}) (interface{}, error) {
 		slot2.Set(val1)
 	}
 	return slice.Interface(), nil
+}
+
+func templateJSON(x interface{}) (string, error) {
+	res, err := json.Marshal(x)
+	return string(res), err
 }

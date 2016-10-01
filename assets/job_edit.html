@@ -6,8 +6,13 @@
 
     <title>Job Editor (jobempire)</title>
 
+    <script>
+    window.initialTasks = JSON.parse("{{json .Tasks}}");
+    </script>
+
     <script src="assets/scripts/pentagons.js"></script>
     <script src="assets/scripts/job_edit/main.js"></script>
+    <script src="assets/scripts/job_edit/creator.js"></script>
     <link rel="stylesheet" href="assets/styles/style.css" type="text/css">
   </head>
   <body>
@@ -28,6 +33,18 @@
         {{template "numberField" pair "Max Instances" .MaxInstances}}
         {{template "numberField" pair "Priority" .Priority}}
         {{template "numberField" pair "CPUs" .NumCPU}}
+      </div>
+
+      <div id="tasks">
+      </div>
+
+      <div id="add-task-pane" class="pane">
+        {{template "messageField" "Add A Task"}}
+        <div class="pane-buttons" data-center="true">
+          <button id="add-filetransfer">Get/Put</button>
+          <button id="add-gorun">Go Run</button>
+          <button id="add-exit">Exit</button>
+        </div>
       </div>
 
       <div id="task-templates">
@@ -86,7 +103,7 @@
 {{end}}
 
 {{define "taskExit"}}
-<div class="task pane task-gorun">
+<div class="task pane task-exit">
   {{template "taskControls"}}
   {{template "messageField" "Exit"}}
 </div>
