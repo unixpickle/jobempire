@@ -10,13 +10,18 @@
     <div class="list">
       <div class="pane">
         {{template "slaveInfoFields" .}}
+        {{if .Master.Accepting}}
+          <div class="pane-buttons" data-center="true">
+            <button onclick="location='/shutdown?id={{.ID}}'"
+                    class="delete-button">Halt</button>
+          </div>
+        {{end}}
       </div>
       {{if .Master.Accepting}}
         <div class="pane">
           {{template "messageField" "Automatic scheduling"}}
           <div class="pane-buttons" data-center="true">
-            <button onclick="location='/setauto?auto={{not .Auto}}&amp;id={{.ID}}'"
-                    id="toggle-auto">
+            <button onclick="location='/setauto?auto={{not .Auto}}&amp;id={{.ID}}'">
               {{- if .Auto -}} Disable {{- else -}} Enable {{- end -}}
             </button>
           </div>

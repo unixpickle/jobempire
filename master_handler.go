@@ -79,6 +79,8 @@ func (m *MasterHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		m.ServeDeleteJob(w, r)
 	case "/setauto":
 		m.ServeSetAuto(w, r)
+	case "/shutdown":
+		m.ServeShutdownSlave(w, r)
 	default:
 		m.serveNotFound(w, r)
 	}
@@ -216,6 +218,16 @@ func (m *MasterHandler) ServeSetAuto(w http.ResponseWriter, r *http.Request) {
 	auto := r.FormValue("auto") == "true"
 	m.Scheduler.SetAuto(master, auto)
 	http.Redirect(w, r, "/slave?id="+r.FormValue("id"), http.StatusSeeOther)
+}
+
+func (m *MasterHandler) ServeShutdownSlave(w http.ResponseWriter, r *http.Request) {
+	master, _, err := m.slaveForID(r.FormValue("id"))
+	if err != nil {
+		m.serveError(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	master.Shutdown()
+	http.Redirect(w, r, "/slaves", http.StatusSeeOther)
 }
 
 func (m *MasterHandler) serveAsset(w http.ResponseWriter, r *http.Request, cleanPath string) {
