@@ -11,6 +11,11 @@
       <div class="pane" id="scheduling-prefs">
         {{template "liveJobFields" .}}
       </div>
+      {{range .Tasks 0 .TaskCount}}
+        <div class="pane">
+          {{template "liveTaskFields" .}}
+        </div>
+      {{end}}
     </div>
   </body>
 </html>

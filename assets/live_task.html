@@ -1,0 +1,42 @@
+{{define "liveTaskFields"}}
+  {{with jsonPass .Task}}
+    {{if .FileTransfer}}
+      {{template "liveFileTransfer" .FileTransfer}}
+    {{else if .GoRun}}
+      {{template "liveGoRun" .GoRun}}
+    {{else}}
+      {{template "liveExit" .Exit}}
+    {{end}}
+  {{end}}
+  {{template "fieldSeparator"}}
+  {{$dateFmt := "Jan 3 2006 15:04:05"}}
+  {{template "labelField" pair "Start time" (.StartTime.Format $dateFmt)}}
+  {{if not .Running}}
+    {{template "labelField" pair "End time" (.EndTime.Format $dateFmt)}}
+    {{template "labelField" pair "Status" "Not running"}}
+    {{if .Error}}
+      {{template "labelField" pair "Error" .Error}}
+    {{end}}
+  {{else}}
+    {{template "labelField" pair "Status" "Running"}}
+  {{end}}
+{{end}}
+
+{{define "liveFileTransfer"}}
+  {{template "messageField" "File Transfer"}}
+  {{template "labelField" pair "To slave" .ToSlave}}
+  {{template "labelField" pair "Master path" .MasterPath}}
+  {{template "labelField" pair "Slave path" .SlavePath}}
+{{end}}
+
+{{define "liveGoRun"}}
+  {{template "messageField" "Go Run"}}
+  {{template "labelField" pair "Source dir" .GoSourceDir}}
+  {{range .Arguments}}
+    {{template "labelField" pair "" .}}
+  {{end}}
+{{end}}
+
+{{define "liveExit"}}
+  {{template "messageField" "Exit"}}
+{{end}}
