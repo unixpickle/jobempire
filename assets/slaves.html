@@ -2,31 +2,33 @@
 <!doctype html>
 <html>
   <head>
-    {{template "htmlHeader"}}
-
-    <title>Slaves (jobempire)</title>
-
-    <script src="assets/scripts/pentagons.js"></script>
-    <link rel="stylesheet" href="assets/styles/style.css" type="text/css">
+    {{template "htmlHeader" "Slaves"}}
   </head>
   <body>
     {{template "navHeader" "slaves"}}
     {{if $masters := masters .}}
       <div class="grid">
-      {{range reverse $masters}}
-        <div class="pane {{template "slaveRunningClass" .}}">
-          {{with .Master.SlaveInfo}}
+      {{range $i, $m := reverse $masters}}
+        <div class="pane {{template "slaveRunningClass" .}}"
+             data-clickable="true" onclick="location='/slave?id={{$i}}'">
+          {{with $m.Master.SlaveInfo}}
             {{template "labelField" pair "CPUs" .NumCPU}}
             {{template "labelField" pair "Max Procs" .MaxProcs}}
             {{template "labelField" pair "GOOS" .OS}}
             {{template "labelField" pair "GOARCH" .Arch}}
           {{end}}
 
-          {{template "labelField" pair "Total Jobs" .Master.JobCount}}
+          {{if $m.Auto}}
+            {{template "labelField" pair "Scheduling" "Auto"}}
+          {{else}}
+            {{template "labelField" pair "Scheduling" "Manual"}}
+          {{end}}
 
-          {{if .Master.Accepting}}
+          {{template "labelField" pair "Total Jobs" $m.Master.JobCount}}
+
+          {{if $m.Master.Accepting}}
             {{template "messageField" "Accepting"}}
-          {{else if .Master.Running}}
+          {{else if $m.Master.Running}}
             {{template "messageField" "Halting"}}
           {{else}}
             {{template "messageField" "Stopped"}}
