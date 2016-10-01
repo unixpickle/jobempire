@@ -11,13 +11,19 @@
       <div class="pane">
         {{template "liveTaskFields" .}}
       </div>
-      <div class="pane">
-        <ol id="backlog">
-          {{range .LogEntries 0 .LogSize}}
-            <li class="{{template "logEntryClass" .}}">{{.Message}}</li>
-          {{end}}
-        </ul>
-      </div>
+      {{if .LogSize}}
+        <div class="pane">
+          <ol id="backlog">
+            {{range .LogEntries 0 .LogSize}}
+              <li class="{{template "logEntryClass" .}}">{{.Message}}</li>
+            {{end}}
+          </ol>
+        </div>
+      {{else}}
+        <div class="pane">
+          {{template "messageField" "No log output."}}
+        </div>
+      {{end}}
     </div>
   </body>
 </html>
