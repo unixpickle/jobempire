@@ -8,12 +8,14 @@
     {{template "navHeader" "slaves"}}
 
     <div class="list">
-      <div class="pane" id="scheduling-prefs">
-        {{template "liveJobFields" .}}
+      <div class="pane">
+        {{template "liveJobFields" .LiveJob}}
       </div>
-      {{range .Tasks 0 .TaskCount}}
-        <div class="pane">
-          {{template "liveTaskFields" .}}
+      {{$taskRoot := printf "/task?slave=%s&job=%s&task=" .SlaveID .JobIndex}}
+      {{range $i, $task := .LiveJob.Tasks 0 .LiveJob.TaskCount}}
+        <div class="pane" data-clickable="true"
+             onclick="window.location='{{$taskRoot -}} {{- $i}}'">
+          {{template "liveTaskFields" $task}}
         </div>
       {{end}}
     </div>

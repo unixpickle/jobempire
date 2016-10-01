@@ -1,3 +1,36 @@
+{{define "liveTask"}}
+<!doctype html>
+<html>
+  <head>
+    {{template "htmlHeader" "Live Task"}}
+  </head>
+  <body>
+    {{template "navHeader" "slaves"}}
+
+    <div class="list">
+      <div class="pane">
+        {{template "liveTaskFields" .}}
+      </div>
+      <div class="pane">
+        <ol id="backlog">
+          {{range .LogEntries 0 .LogSize}}
+            <li class="{{template "logEntryClass" .}}">{{.Message}}</li>
+          {{end}}
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>
+{{end}}
+
+{{define "logEntryClass"}}
+  {{- if .FromMaster -}}
+    from-master
+  {{- else -}}
+    from-slave
+  {{- end -}}
+{{end}}
+
 {{define "liveTaskFields"}}
   {{with jsonPass .Task}}
     {{if .FileTransfer}}

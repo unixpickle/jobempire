@@ -71,6 +71,8 @@ func (m *MasterHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		m.ServeSlavePage(w, r)
 	case "/job":
 		m.ServeLiveJobPage(w, r)
+	case "/task":
+		m.ServeLiveTaskPage(w, r)
 	case "/savejob":
 		m.ServeSaveJob(w, r)
 	case "/deletejob":
@@ -144,7 +146,32 @@ func (m *MasterHandler) ServeLiveJobPage(w http.ResponseWriter, r *http.Request)
 		m.serveError(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	m.serveTemplate(w, "liveJob", job)
+	pageObj := map[string]interface{}{
+		"SlaveID":  r.FormValue("slave"),
+		"JobIndex": r.FormValue("idx"),
+		"LiveJob":  job,
+	}
+	m.serveTemplate(w, "liveJob", pageObj)
+}
+
+func (m *MasterHandler) ServeLiveTaskPage(w http.ResponseWriter, r *http.Request) {
+	job, err := m.liveJobForID(r.FormValue("slave"), r.FormValue("job"))
+	if err != nil {
+		m.serveError(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	taskIdx, err := strconv.Atoi(r.FormValue("task"))
+	if err != nil {
+		m.serveError(w, "invalid task index", http.StatusBadRequest)
+		return
+	}
+	count := job.TaskCount()
+	if taskIdx < 0 || taskIdx >= count {
+		m.serveError(w, "task index out of bounds", http.StatusBadRequest)
+		return
+	}
+	task := job.Tasks(taskIdx, taskIdx+1)[0]
+	m.serveTemplate(w, "liveTask", task)
 }
 
 func (m *MasterHandler) ServeSaveJob(w http.ResponseWriter, r *http.Request) {
@@ -233,7 +260,7 @@ func (m *MasterHandler) slaveForID(slaveID string) (*jobadmin.LiveMaster, bool, 
 	if err != nil {
 		return nil, false, err
 	}
-	if idx >= len(masters) || idx < 0 {
+	if idx < 0 || idx >= len(masters) {
 		return nil, false, errors.New("slave index out of bounds")
 	}
 	return masters[idx], auto[idx], nil
