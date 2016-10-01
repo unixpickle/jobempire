@@ -365,5 +365,5 @@ input:focus {
   padding: 2px 0;
 }
 #backlog li.from-master {
-  background-color: rgba(255, 255, 200, 0.1);
+  background-color: rgba(255, 255, 200, 0.5);
 }

@@ -39,19 +39,19 @@
     {{template "labelField" pair "GOARCH" .Arch}}
   {{end}}
 
+  {{template "labelField" pair "Total Jobs" .Master.JobCount}}
+
   {{if .Auto}}
     {{template "labelField" pair "Scheduling" "Auto"}}
   {{else}}
     {{template "labelField" pair "Scheduling" "Manual"}}
   {{end}}
 
-  {{template "labelField" pair "Total Jobs" .Master.JobCount}}
-
   {{if .Master.Accepting}}
-    {{template "messageField" "Accepting"}}
+    {{template "labelField" pair "Status" "Online"}}
   {{else if .Master.Running}}
-    {{template "messageField" "Halting"}}
+    {{template "labelField" pair "Status" "Halting"}}
   {{else}}
-    {{template "messageField" "Stopped"}}
+    {{template "labelField" pair "Status" "Shutdown"}}
   {{end}}
 {{end}}
