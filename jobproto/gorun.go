@@ -48,9 +48,10 @@ func (g *GoRun) RunMaster(ch TaskChannel) error {
 	}()
 	tempFile := filepath.Join(tempDir, "executable")
 
-	cmd := exec.Command("go", "build", "-o", tempFile, g.GoSourceDir)
-	cmd.Env = []string{"GOPATH="+os.Getenv("GOPATH"), "GOROOT="+os.Getenv("GOROOT"),
-		"GOOS="+osArch[0], "GOARCH="+osArch[1]}
+	cmd := exec.Command("go", "build", "-o", tempFile)
+	cmd.Env = []string{"GOPATH=" + os.Getenv("GOPATH"), "GOROOT=" + os.Getenv("GOROOT"),
+		"GOOS=" + osArch[0], "GOARCH=" + osArch[1]}
+	cmd.Dir = g.GoSourceDir
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("compile binary: %s", err)
 	}
