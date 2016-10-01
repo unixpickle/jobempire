@@ -10,6 +10,12 @@
     <div class="list">
       <div class="pane">
         {{template "liveJobFields" .LiveJob}}
+        {{if .LiveJob.Running}}
+          <div class="pane-buttons" data-center="true">
+            <button onclick="location='/stopjob?slave={{.SlaveID}}&amp;idx={{.JobIndex}}'"
+                    class="delete-button">Kill</button>
+          </div>
+        {{end}}
       </div>
       {{$taskRoot := printf "/task?slave=%s&job=%s&task=" .SlaveID .JobIndex}}
       {{range $i, $task := .LiveJob.Tasks 0 .LiveJob.TaskCount}}

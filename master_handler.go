@@ -81,6 +81,8 @@ func (m *MasterHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		m.ServeSetAuto(w, r)
 	case "/shutdown":
 		m.ServeShutdownSlave(w, r)
+	case "/stopjob":
+		m.ServeStopJob(w, r)
 	default:
 		m.serveNotFound(w, r)
 	}
@@ -228,6 +230,17 @@ func (m *MasterHandler) ServeShutdownSlave(w http.ResponseWriter, r *http.Reques
 	}
 	master.Shutdown()
 	http.Redirect(w, r, "/slaves", http.StatusSeeOther)
+}
+
+func (m *MasterHandler) ServeStopJob(w http.ResponseWriter, r *http.Request) {
+	job, err := m.liveJobForID(r.FormValue("slave"), r.FormValue("idx"))
+	if err != nil {
+		m.serveError(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	job.Cancel()
+	http.Redirect(w, r, "/job?slave="+r.FormValue("slave")+"&idx="+r.FormValue("idx"),
+		http.StatusSeeOther)
 }
 
 func (m *MasterHandler) serveAsset(w http.ResponseWriter, r *http.Request, cleanPath string) {
