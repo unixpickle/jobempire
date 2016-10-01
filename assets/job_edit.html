@@ -6,13 +6,10 @@
 
     <title>Job Editor (jobempire)</title>
 
-    <script>
-    window.initialTasks = JSON.parse("{{json .Tasks}}");
-    </script>
-
     <script src="assets/scripts/pentagons.js"></script>
     <script src="assets/scripts/job_edit/main.js"></script>
     <script src="assets/scripts/job_edit/creator.js"></script>
+    <script src="assets/scripts/job_edit/encoder.js"></script>
     <link rel="stylesheet" href="assets/styles/style.css" type="text/css">
   </head>
   <body>
@@ -29,13 +26,24 @@
         </div>
       </div>
 
-      <div class="pane">
-        {{template "numberField" pair "Max Instances" .MaxInstances}}
+      <div class="pane" id="scheduling-prefs">
+        {{template "numberField" pair "Max instances" .MaxInstances}}
         {{template "numberField" pair "Priority" .Priority}}
         {{template "numberField" pair "CPUs" .NumCPU}}
       </div>
 
       <div id="tasks">
+        {{range .Tasks}}
+          {{with jsonPass .}}
+            {{if .FileTransfer}}
+              {{template "taskFileTransfer" .FileTransfer}}
+            {{else if .GoRun}}
+              {{template "taskGoRun" .GoRun}}
+            {{else}}
+              {{template "taskExit" .Exit}}
+            {{end}}
+          {{end}}
+        {{end}}
       </div>
 
       <div id="add-task-pane" class="pane">
@@ -87,6 +95,9 @@
   {{template "messageField" "Go Run"}}
   {{if .}}
     {{template "textField" pair "Source dir" .GoSourceDir}}
+    {{range .Arguments}}
+      {{template "textField" pair "" .}}
+    {{end}}
   {{else}}
     {{template "textField" pair "Source dir" ""}}
   {{end}}
@@ -94,11 +105,6 @@
     <button class="delete-button">- Arg</button>
     <button class="add-button">+ Arg</button>
   </div>
-  {{if .}}
-    {{range .Arguments}}
-      {{template "textField" pair "Argument" .}}
-    {{end}}
-  {{end}}
 </div>
 {{end}}
 

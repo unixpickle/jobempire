@@ -117,10 +117,10 @@ func parseTemplates() *template.Template {
 	}
 	res := template.New("master")
 	res.Funcs(template.FuncMap{
-		"masters": templateMasters,
-		"pair":    templatePair,
-		"reverse": templateReverse,
-		"json":    templateJSON,
+		"masters":  templateMasters,
+		"pair":     templatePair,
+		"reverse":  templateReverse,
+		"jsonPass": templateJSONPass,
 	})
 	return template.Must(res.Parse(body.String()))
 }
@@ -165,7 +165,12 @@ func templateReverse(x interface{}) (interface{}, error) {
 	return slice.Interface(), nil
 }
 
-func templateJSON(x interface{}) (string, error) {
-	res, err := json.Marshal(x)
-	return string(res), err
+func templateJSONPass(x interface{}) (map[string]interface{}, error) {
+	data, err := json.Marshal(x)
+	if err != nil {
+		return nil, err
+	}
+	var res map[string]interface{}
+	err = json.Unmarshal(data, &res)
+	return res, err
 }
