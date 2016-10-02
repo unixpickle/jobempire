@@ -22,6 +22,7 @@ func init() {
 // by compiling it on the server and transferring the
 // executable.
 type GoRun struct {
+	GoPath      string
 	GoSourceDir string
 	Arguments   []string
 }
@@ -49,8 +50,13 @@ func (g *GoRun) RunMaster(ch TaskChannel) error {
 	tempFile := filepath.Join(tempDir, "executable")
 
 	cmd := exec.Command("go", "build", "-o", tempFile)
-	cmd.Env = []string{"GOPATH=" + os.Getenv("GOPATH"), "GOROOT=" + os.Getenv("GOROOT"),
-		"GOOS=" + osArch[0], "GOARCH=" + osArch[1]}
+	cmd.Env = []string{"GOROOT=" + os.Getenv("GOROOT"), "GOOS=" + osArch[0],
+		"GOARCH=" + osArch[1]}
+	if g.GoPath != "" {
+		cmd.Env = append(cmd.Env, "GOPATH="+g.GoPath)
+	} else {
+		cmd.Env = append(cmd.Env, "GOPATH="+os.Getenv("GOPATH"))
+	}
 	cmd.Dir = g.GoSourceDir
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("compile binary: %s", err)

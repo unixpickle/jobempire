@@ -69,6 +69,7 @@
 
 {{define "liveGoRun"}}
   {{template "messageField" "Go Run"}}
+  {{template "labelField" pair "GOPATH" .GoPath}}
   {{template "labelField" pair "Source dir" .GoSourceDir}}
   {{range .Arguments}}
     {{template "labelField" pair "" .}}

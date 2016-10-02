@@ -89,11 +89,13 @@
   {{template "taskControls"}}
   {{template "messageField" "Go Run"}}
   {{if .}}
+    {{template "textField" pair "GOPATH" .GoPath}}
     {{template "textField" pair "Source dir" .GoSourceDir}}
     {{range .Arguments}}
       {{template "textField" pair "" .}}
     {{end}}
   {{else}}
+    {{template "textField" pair "GOPATH" .GoSourceDir}}
     {{template "textField" pair "Source dir" ""}}
   {{end}}
   <div class="pane-buttons" data-center="true">

@@ -34,11 +34,12 @@
     var inputs = el.getElementsByTagName('input');
     var res = {
       GoRun: {
-        GoSourceDir: inputs[0].value,
+        GoPath: inputs[0].value,
+        GoSourceDir: inputs[1].value,
         Arguments: []
       }
     };
-    for (var i = 1, len = inputs.length; i < len; ++i) {
+    for (var i = 2, len = inputs.length; i < len; ++i) {
       res.GoRun.Arguments.push(inputs[i].value);
     }
     return res;
