@@ -2,6 +2,7 @@ package jobproto
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/gob"
 	"fmt"
 	"io"
@@ -70,9 +71,18 @@ func (g *GoRun) RunMaster(ch TaskChannel) error {
 	os.RemoveAll(tempDir)
 	tempDir = ""
 
-	if err := ch.Send(executable); err != nil {
-		return fmt.Errorf("send executable: %s", err)
+	ch.Send(len(executable))
+	for i := 0; i < len(executable); i += transferBufferSize {
+		if i+transferBufferSize >= len(executable) {
+			err = ch.Send(executable[i:])
+		} else {
+			err = ch.Send(executable[i : i+transferBufferSize])
+		}
+		if err != nil {
+			return fmt.Errorf("send executable: %s", err)
+		}
 	}
+
 	if err := ch.Send(g.Arguments); err != nil {
 		return fmt.Errorf("send arguments: %s", err)
 	}
@@ -90,13 +100,25 @@ func (g *GoRun) RunSlave(root string, ch TaskChannel) error {
 		return fmt.Errorf("send platform info: %s", err)
 	}
 
-	executableObj, err := ch.Receive()
+	sizeObj, err := ch.Receive()
 	if err != nil {
-		return fmt.Errorf("receive executable: %s", err)
+		return fmt.Errorf("receive size: %s", err)
 	}
-	executable, ok := executableObj.([]byte)
+	size, ok := sizeObj.(int)
 	if !ok {
-		return fmt.Errorf("invalid executable type: %T", executableObj)
+		return fmt.Errorf("bad size type: %T", sizeObj)
+	}
+	var executable bytes.Buffer
+	for executable.Len() < size {
+		dataObj, err := ch.Receive()
+		if err != nil {
+			return fmt.Errorf("receive executable data: %s", err)
+		}
+		data, ok := dataObj.([]byte)
+		if !ok {
+			return fmt.Errorf("invalid data type: %T", dataObj)
+		}
+		executable.Write(data)
 	}
 
 	argsObj, err := ch.Receive()
@@ -109,7 +131,7 @@ func (g *GoRun) RunSlave(root string, ch TaskChannel) error {
 	}
 
 	tempExcPath := filepath.Join(root, fmt.Sprintf("%d", rand.Int63()))
-	if err := ioutil.WriteFile(tempExcPath, executable, 0755); err != nil {
+	if err := ioutil.WriteFile(tempExcPath, executable.Bytes(), 0755); err != nil {
 		return fmt.Errorf("write executable: %s", err)
 	}
 	defer os.Remove(tempExcPath)
