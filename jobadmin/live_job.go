@@ -158,6 +158,8 @@ func (l *LiveJob) done(e error) {
 		l.masterJob.Close()
 	}
 
+	l.masterJob.Close()
+
 	l.resLock.Lock()
 	l.endTime = time.Now()
 	if e != nil {
