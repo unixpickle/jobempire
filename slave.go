@@ -34,7 +34,7 @@ func SlaveMain(host string, port int, password string) {
 				slave.Close()
 				return
 			}
-			defer os.Remove(rootDir)
+			defer os.RemoveAll(rootDir)
 			job.RunTasks(rootDir)
 		}()
 	}
