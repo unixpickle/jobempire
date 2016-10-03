@@ -131,6 +131,9 @@ func (g *GoRun) RunSlave(root string, ch TaskChannel) error {
 	}
 
 	tempExcPath := filepath.Join(root, fmt.Sprintf("%d", rand.Int63()))
+	if runtime.GOOS == "windows" {
+		tempExcPath += ".exe"
+	}
 	if err := ioutil.WriteFile(tempExcPath, executable.Bytes(), 0755); err != nil {
 		return fmt.Errorf("write executable: %s", err)
 	}
