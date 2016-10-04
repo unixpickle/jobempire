@@ -60,10 +60,8 @@ button:hover, input[type="submit"]:hover {
   color: #999;
 }
 #header a.cur-page {
+  color: #65bcd4;
   border-bottom: 4px solid #65bcd4;
-}
-#header a.cur-page:hover {
-  color: #777;
 }
 .pane {
   background-color: rgba(255, 255, 255, 0.7);
