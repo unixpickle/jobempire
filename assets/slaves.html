@@ -3,18 +3,27 @@
 <html>
   <head>
     {{template "htmlHeader" "Slaves"}}
+
+    <script src="assets/scripts/slaves/main.js"></script>
   </head>
   <body>
     {{template "navHeader" "slaves"}}
     {{if $masters := masters .}}
       <div class="grid">
-      {{range $revI, $m := reverse $masters}}
-        {{$i := reverseIndex $revI (len $masters)}}
-        <div class="pane {{template "slaveRunningClass" .}}"
-             data-clickable="true" onclick="location='/slave?id={{$i}}'">
-          {{template "slaveInfoFields" $m}}
+        <div class="grid-header list">
+          <div class="pane">
+            <div class="pane-buttons" data-center="true">
+              <button id="toggle-showall">Hide Done</button>
+            </div>
+          </div>
         </div>
-      {{end}}
+        {{range $revI, $m := reverse $masters}}
+          {{$i := reverseIndex $revI (len $masters)}}
+          <div class="pane {{template "slaveRunningClass" .}}"
+               data-clickable="true" onclick="location='/slave?id={{$i}}'">
+            {{template "slaveInfoFields" $m}}
+          </div>
+        {{end}}
       </div>
     {{else}}
       <div id="no-slaves" class="empty-pane">No Slaves</div>

@@ -109,6 +109,10 @@ button:hover, input[type="submit"]:hover {
   margin: 0 6px 12px 6px;
   padding: 15px;
 }
+.grid .grid-header {
+  position: relative;
+  top: auto;
+}
 .list {
   position: absolute;
   top: 56px;
@@ -143,6 +147,7 @@ button:hover, input[type="submit"]:hover {
   float: right;
   margin-left: 10px;
   width: 100px;
+  padding: 0;
 }
 .pane-buttons[data-center="true"] {
   text-align: center;
@@ -385,4 +390,7 @@ input:focus {
 }
 #backlog li.from-master {
   background-color: rgba(255, 255, 200, 0.5);
+}
+.hide-done-slaves .slave-pane-not-running {
+  display: none;
 }
