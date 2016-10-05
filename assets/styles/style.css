@@ -149,11 +149,10 @@ button:hover, input[type="submit"]:hover {
 }
 .pane-buttons[data-center="true"] {
   text-align: center;
-  margin-bottom: 10px;
 }
 .pane-buttons[data-center="true"] > button, input[type="submit"] {
   float: none;
-  margin: 0 3px;
+  margin: 0 3px 10px 3px;
 }
 .pane-gap {
   height: 10px;
@@ -231,6 +230,7 @@ input:focus {
 }
 .number-field input {
   width: 120px;
+  max-width: 100%;
 }
 .text-field {
   width: 100%;
@@ -243,6 +243,7 @@ input:focus {
 }
 .text-field input {
   width: 200px;
+  max-width: 100%;
 }
 .check-field {
   width: 100%;
@@ -255,6 +256,7 @@ input:focus {
 }
 .check-field input {
   width: auto;
+  max-width: 100%;
 }
 .check-field .field-value {
   line-height: 30px;
