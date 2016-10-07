@@ -3,6 +3,7 @@ package jobadmin
 import (
 	"errors"
 	"sync"
+	"time"
 
 	"github.com/unixpickle/jobempire/jobproto"
 )
@@ -16,7 +17,8 @@ type jobRequest struct {
 // A LiveMaster manages various aspects of an actively
 // connected master connection.
 type LiveMaster struct {
-	master jobproto.Master
+	master    jobproto.Master
+	startTime time.Time
 
 	shutdownLock sync.Mutex
 	isShutdown   bool
@@ -27,15 +29,19 @@ type LiveMaster struct {
 	jobsLock sync.RWMutex
 	jobs     []*LiveJob
 	jobsNote nextNotifier
+
+	endLock sync.RWMutex
+	endTime time.Time
 }
 
 // RunLiveMaster creates a LiveMaster around an existing
 // master connection.
 func RunLiveMaster(m jobproto.Master) *LiveMaster {
 	lm := &LiveMaster{
-		master:   m,
-		shutdown: make(chan struct{}),
-		newJobs:  make(chan jobRequest),
+		master:    m,
+		startTime: time.Now(),
+		shutdown:  make(chan struct{}),
+		newJobs:   make(chan jobRequest),
 	}
 	go lm.runMaster()
 	return lm
@@ -128,6 +134,21 @@ func (l *LiveMaster) Wait(cancel <-chan struct{}) {
 	l.jobsNote.WaitClose(cancel)
 }
 
+// StartTime returns the time when the master was started.
+func (l *LiveMaster) StartTime() time.Time {
+	return l.startTime
+}
+
+// EndTime returns the time when the master was fully and
+// completely disconnected and all local jobs for the
+// master had completed.
+// This is only non-zero if Running is false.
+func (l *LiveMaster) EndTime() time.Time {
+	l.endLock.RLock()
+	defer l.endLock.RUnlock()
+	return l.endTime
+}
+
 func (l *LiveMaster) runMaster() {
 	go func() {
 		l.master.Wait()
@@ -143,6 +164,9 @@ func (l *LiveMaster) runMaster() {
 		for _, j := range jobs {
 			j.Wait(nil)
 		}
+		l.endLock.Lock()
+		l.endTime = time.Now()
+		l.endLock.Unlock()
 	}()
 
 	for {

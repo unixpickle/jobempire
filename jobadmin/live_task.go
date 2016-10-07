@@ -109,8 +109,6 @@ func (l *LiveTask) Error() error {
 
 // StartTime returns the time when the task was started.
 func (l *LiveTask) StartTime() time.Time {
-	l.resLock.RLock()
-	defer l.resLock.RUnlock()
 	return l.startTime
 }
 

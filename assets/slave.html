@@ -9,6 +9,10 @@
 
     <div class="list">
       <div class="pane">
+        {{template "dateField" pair "Connected" .Master.StartTime}}
+        {{if not .Master.Running}}
+          {{template "dateField" pair "Disconnected" .Master.EndTime}}
+        {{end}}
         {{template "slaveInfoFields" .}}
         {{if .Master.Accepting}}
           <div class="pane-buttons" data-center="true">
