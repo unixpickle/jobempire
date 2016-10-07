@@ -50,6 +50,14 @@
         </div>
       </div>
 
+      {{if not (eq .ID "")}}
+        <div class="pane">
+          <div class="pane-buttons" data-center="true">
+            <button onclick="location='/clone?id={{.ID}}'">Clone</button>
+          </div>
+        </div>
+      {{end}}
+
       <div id="task-templates">
         {{template "taskFileTransfer"}}
         {{template "taskGoRun"}}

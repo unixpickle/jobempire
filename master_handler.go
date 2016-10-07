@@ -67,6 +67,8 @@ func (m *MasterHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		m.ServeAddJobPage(w, r)
 	case "/editjob":
 		m.ServeEditJobPage(w, r)
+	case "/clone":
+		m.ServeClonePage(w, r)
 	case "/slave":
 		m.ServeSlavePage(w, r)
 	case "/job":
@@ -184,6 +186,29 @@ func (m *MasterHandler) ServeLiveTaskPage(w http.ResponseWriter, r *http.Request
 	}
 	task := job.Tasks(taskIdx, taskIdx+1)[0]
 	m.serveTemplate(w, "liveTask", task)
+}
+
+func (m *MasterHandler) ServeClonePage(w http.ResponseWriter, r *http.Request) {
+	jobID := r.FormValue("id")
+	jobs, err := m.Scheduler.Jobs()
+	if err != nil {
+		m.serveError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	for _, j := range jobs {
+		if j.ID == jobID {
+			jCopy, err := j.Copy()
+			jCopy.Name += " (copy)"
+			if err != nil {
+				m.serveError(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			jCopy.ID = ""
+			m.serveTemplate(w, "jobEdit", jCopy)
+			return
+		}
+	}
+	m.serveError(w, "job ID not found: "+jobID, http.StatusBadRequest)
 }
 
 func (m *MasterHandler) ServeSaveJob(w http.ResponseWriter, r *http.Request) {
