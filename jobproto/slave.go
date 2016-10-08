@@ -4,9 +4,12 @@ import (
 	"encoding/gob"
 	"fmt"
 	"net"
+	"os"
 	"runtime"
+	"strconv"
 	"sync"
 
+	"github.com/cloudfoundry/gosigar"
 	"github.com/unixpickle/gobplexer"
 )
 
@@ -23,6 +26,10 @@ type SlaveInfo struct {
 	// MaxProcs indicates the value of GOMAXPROCS.
 	MaxProcs int
 
+	// TotalMem indicates the total amount of memory,
+	// measured in MiB.
+	TotalMem int
+
 	// OS indicates the value of GOOS.
 	OS string
 
@@ -33,9 +40,22 @@ type SlaveInfo struct {
 // CurrentSlaveInfo computes the SlaveInfo for the current
 // Go process.
 func CurrentSlaveInfo() SlaveInfo {
+	var memAmount int
+	if memStr := os.Getenv("JOB_MEM_LIMIT"); memStr != "" {
+		var err error
+		memAmount, err = strconv.Atoi(memStr)
+		if err != nil {
+			panic("invalid JOB_MEM_LIMIT: " + memStr)
+		}
+	} else {
+		mem := sigar.Mem{}
+		mem.Get()
+		memAmount = int(mem.Total >> 20)
+	}
 	return SlaveInfo{
 		NumCPU:   runtime.NumCPU(),
 		MaxProcs: runtime.GOMAXPROCS(0),
+		TotalMem: memAmount,
 		OS:       runtime.GOOS,
 		Arch:     runtime.GOARCH,
 	}

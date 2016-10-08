@@ -43,6 +43,7 @@
 {{define "slaveInfoFields"}}
   {{with .Master.SlaveInfo}}
     {{template "labelField" pair "CPUs" (printf "%d (of %d)" .MaxProcs .NumCPU)}}
+    {{template "labelField" pair "Memory" (printf "%d MiB" .TotalMem)}}
     {{template "labelField" pair "GOOS" .OS}}
     {{template "labelField" pair "GOARCH" .Arch}}
   {{end}}

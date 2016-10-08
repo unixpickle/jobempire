@@ -269,12 +269,14 @@ func (s *Scheduler) runLoop() {
 func (s *Scheduler) reschedule(jobs []*Job, masters []*LiveMaster, doneChan chan<- struct{}) {
 	jobCounts := map[string]int{}
 	cpuCounts := make([]int, len(masters))
+	memUsage := make([]int, len(masters))
 	for masterIdx, m := range masters {
 		for _, j := range m.Jobs(0, m.JobCount()) {
 			if j.Running() {
 				job := j.Job()
 				jobCounts[job.ID]++
 				cpuCounts[masterIdx] += job.NumCPU
+				memUsage[masterIdx] += job.MemUsage
 			}
 		}
 	}
@@ -285,14 +287,18 @@ func (s *Scheduler) reschedule(jobs []*Job, masters []*LiveMaster, doneChan chan
 		job := pl.Jobs[jobIdx]
 		var master *LiveMaster
 		for _, i := range rand.Perm(len(masters)) {
-			if cpuCounts[i] < masters[i].SlaveInfo().MaxProcs {
+			enoughMem := memUsage[i]+job.MemUsage <= masters[i].SlaveInfo().TotalMem
+			enoughCPU := cpuCounts[i] < masters[i].SlaveInfo().MaxProcs
+			if enoughMem && enoughCPU {
 				master = masters[i]
 				cpuCounts[i] += job.NumCPU
+				memUsage[i] += job.MemUsage
 				break
 			}
 		}
 		if master == nil {
-			break
+			pl.Remove(jobIdx)
+			continue
 		}
 		s.startJob(job, master, doneChan)
 		jobCounts[job.ID]++

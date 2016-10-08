@@ -51,5 +51,8 @@ func dieUsage() {
 	fmt.Fprintln(os.Stderr, "Usage: jobempire master <slave_port> <admin_port> <slave_pass>")
 	fmt.Fprintln(os.Stderr, "                        <admin_pass> <jobs.json>")
 	fmt.Fprintln(os.Stderr, "       jobempire slave <host> <port> <password>")
+	fmt.Fprintln(os.Stderr, "\nOptional environment variables:")
+	fmt.Fprintln(os.Stderr, " JOB_MEM_LIMIT   maximum memory in MiB (for slave)")
+	fmt.Fprintln(os.Stderr)
 	os.Exit(1)
 }

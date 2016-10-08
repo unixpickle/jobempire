@@ -46,6 +46,15 @@ type Job struct {
 	//
 	// This may be 0 for jobs that are not CPU-bound.
 	NumCPU int
+
+	// MemUsage specifies the expected amount of memory usage
+	// for this job, measured in MiB.
+	//
+	// The scheduler will never schedule a job on a slave if
+	// the slave does not have MemUsage free MiBs of memory.
+	//
+	// This may be 0 for jobs that are not memory bound.
+	MemUsage int
 }
 
 // Copy creates a deep copy of the Job.
@@ -67,5 +76,5 @@ func (j *Job) Copy() (*Job, error) {
 // Unbounded returns true if the job will be scheduled
 // an infinite number of times and cause problems.
 func (j *Job) Unbounded() bool {
-	return j.NumCPU == 0 && j.Priority > 0 && j.MaxInstances == 0
+	return j.NumCPU == 0 && j.MemUsage == 0 && j.Priority > 0 && j.MaxInstances == 0
 }

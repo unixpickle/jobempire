@@ -10,10 +10,11 @@
       MaxInstances: parseNumValue(scheduling[0], 'Max instances'),
       Priority: parseNumValue(scheduling[1], 'Priority'),
       NumCPU: parseNumValue(scheduling[2], 'CPUs'),
+      MemUsage: parseNumValue(scheduling[3], 'Memory')
     };
 
     if (jobJSON.Priority > 0 && jobJSON.NumCPU === 0 &&
-        jobJSON.MaxInstances === 0) {
+        jobJSON.MaxInstances === 0 && jobJSON.MemUsage === 0) {
       throw "job's scheduling is unbounded";
     }
 

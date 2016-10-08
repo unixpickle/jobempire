@@ -17,6 +17,7 @@
             {{template "labelField" pair "Max Inst." .MaxInstances}}
             {{template "labelField" pair "Priority" .Priority}}
             {{template "labelField" pair "NumCPU" .NumCPU}}
+            {{template "labelField" pair "Memory" (printf "%d MiB" .MemUsage)}}
           </div>
         {{end}}
       </div>
