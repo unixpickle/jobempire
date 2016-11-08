@@ -58,7 +58,6 @@
 
   window.addEventListener('load', function() {
     var saveButton = document.getElementsByClassName('save-button')[0];
-    var deleteButton = document.getElementsByClassName('delete-button')[0];
     saveButton.addEventListener('click', function() {
       try {
         saveJob();
@@ -66,7 +65,10 @@
         alert('Failed to save job: ' + e);
       }
     });
-    deleteButton.addEventListener('click', deleteJob);
+    var deleteButton = document.getElementById('delete-job');
+    if (deleteButton) {
+      deleteButton.addEventListener('click', deleteJob);
+    }
     registerCreators();
   });
 
